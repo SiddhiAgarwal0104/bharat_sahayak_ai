@@ -1,0 +1,27 @@
+# Environment
+.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Data — PDFs and embeddings are NOT pushed to GitHub
+data/schemes/
+data/embeddings/
+
+# Cloudinary index is generated — don't need it on GitHub
+# data/cloudinary_index.json   ← keep this commented, we DO push this file
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

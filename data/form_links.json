@@ -1,0 +1,180 @@
+{
+  "schemes": [
+    {
+      "scheme_id": "health_001",
+      "name": "Ayushman Bharat PM-JAY",
+      "category": "health",
+      "form_url": "https://beneficiary.nha.gov.in/",
+      "guidelines_pdf": "ayushman_bharat.pdf",
+      "form_pdf": "ayushman_bharat_form.pdf"
+    },
+    {
+      "scheme_id": "health_002",
+      "name": "Central Government Health Scheme (CGHS)",
+      "category": "health",
+      "form_url": "https://cghs.gov.in/",
+      "guidelines_pdf": "CENTRAL-GOVERNMENT-HEALTH-SCHEME_guideline.pdf",
+      "form_pdf": "CENTRAL-GOVERNMENT-HEALTH-SCHEME_form.pdf"
+    },
+    {
+      "scheme_id": "health_003",
+      "name": "Janani Suraksha Yojana (JSY)",
+      "category": "health",
+      "form_url": "https://nhm.gov.in/index1.php?lang=1&level=3&sublinkid=841&lid=309",
+      "guidelines_pdf": "janani_suraksha.pdf",
+      "form_pdf": "janani_suraksha.pdf"
+    },
+    {
+      "scheme_id": "health_004",
+      "name": "Rashtriya Bal Swasthya Karyakram (RBSK)",
+      "category": "health",
+      "form_url": "https://rbsk.gov.in/",
+      "guidelines_pdf": "bal_swasthya.pdf",
+      "form_pdf": "sarkariyojana.com-rbsk-scheme-guideline....pdf"
+    },
+    {
+      "scheme_id": "health_005",
+      "name": "Pradhan Mantri Matru Vandana Yojana (PMMVY) - Health",
+      "category": "health",
+      "form_url": "https://pmmvy.wcd.gov.in/",
+      "guidelines_pdf": "matru_vandana.pdf",
+      "form_pdf": "matru_vandana_form.pdf"
+    },
+    {
+      "scheme_id": "pension_001",
+      "name": "Employees Pension Scheme (EPS)",
+      "category": "pension",
+      "form_url": "https://www.epfindia.gov.in/site_docs/PDFs/Downloads_PDFs/Form10D.pdf",
+      "guidelines_pdf": "EmployeePensionScheme_Guidelines.pdf",
+      "form_pdf": "EmployeePensionScheme_Form.pdf"
+    },
+    {
+      "scheme_id": "pension_002",
+      "name": "EPF Pension Withdrawal",
+      "category": "pension",
+      "form_url": "https://www.epfindia.gov.in/site_docs/PDFs/Downloads_PDFs/Form10C.pdf",
+      "guidelines_pdf": "EmployeePensionScheme_Guidelines.pdf",
+      "form_pdf": "EPFPensionWithdrawal_Form.pdf"
+    },
+    {
+      "scheme_id": "pension_003",
+      "name": "National Pension System (NPS)",
+      "category": "pension",
+      "form_url": "https://retail.sbi.bank.in/sbi/downloads/NPS_Editable_Form.pdf",
+      "guidelines_pdf": "NPS_Guidelines.pdf",
+      "form_pdf": "NPS_Form.pdf"
+    },
+    {
+      "scheme_id": "pension_004",
+      "name": "NPS Government Employees",
+      "category": "pension",
+      "form_url": "https://retail.sbi.bank.in/sbi/downloads/NPS_Editable_Form.pdf",
+      "guidelines_pdf": "NPSGovt_Guidelines.pdf",
+      "form_pdf": "NPSGovt_Form.pdf"
+    },
+    {
+      "scheme_id": "pension_005",
+      "name": "Atal Pension Yojana (APY)",
+      "category": "pension",
+      "form_url": "https://www.pfrda.org.in/web/pfrda/w/apy-subscriber-registration-form-english",
+      "guidelines_pdf": "Atal_Guidelines.pdf",
+      "form_pdf": "Atal_Form.pdf"
+    },
+    {
+      "scheme_id": "pension_006",
+      "name": "Unified Pension Scheme (UPS)",
+      "category": "pension",
+      "form_url": "https://finance.wb.gov.in/writereaddata/DT-O2N.pdf",
+      "guidelines_pdf": "UPS_G+F.pdf",
+      "form_pdf": "UPS_G+F.pdf"
+    },
+    {
+      "scheme_id": "pension_007",
+      "name": "NPS English (CPAO)",
+      "category": "pension",
+      "form_url": "https://cpao.nic.in/pdf/NPS_ENGLISH_BOOK.pdf",
+      "guidelines_pdf": "NPSEng_Form.pdf",
+      "form_pdf": "NPSEng_Form.pdf"
+    },
+    {
+      "scheme_id": "agriculture_001",
+      "name": "PM Kisan Samman Nidhi (PM-KISAN)",
+      "category": "agriculture",
+      "form_url": "https://pmkisan.gov.in/",
+      "guidelines_pdf": "PM-KISAN-guideline.pdf",
+      "form_pdf": "PM-KISAN_form.pdf"
+    },
+    {
+      "scheme_id": "agriculture_002",
+      "name": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+      "category": "agriculture",
+      "form_url": "https://pmfby.gov.in/",
+      "guidelines_pdf": "PMFBY-guideline.pdf",
+      "form_pdf": "PMFBY-form.pdf"
+    },
+    {
+      "scheme_id": "agriculture_003",
+      "name": "Pradhan Mantri Krishi Sinchayee Yojana (PMKSY)",
+      "category": "agriculture",
+      "form_url": "https://www.pmksy.gov.in/",
+      "guidelines_pdf": "PMKSY-guidelines.pdf",
+      "form_pdf": "PMKSY-form.pdf"
+    },
+    {
+      "scheme_id": "agriculture_004",
+      "name": "Kisan Credit Card (KCC)",
+      "category": "agriculture",
+      "form_url": "https://www.myscheme.gov.in/schemes/kcc",
+      "guidelines_pdf": "KCC-guideliens.pdf",
+      "form_pdf": "Kcc-form.pdf"
+    },
+    {
+      "scheme_id": "agriculture_005",
+      "name": "Sub-Mission on Agricultural Mechanization (SMAM)",
+      "category": "agriculture",
+      "form_url": "https://www.myscheme.gov.in/schemes/smam",
+      "guidelines_pdf": "SMAM-guidelines.pdf",
+      "form_pdf": "SMAM-form.pdf"
+    },
+    {
+      "scheme_id": "women_001",
+      "name": "Mahila Shakti Kendra (Mission Shakti)",
+      "category": "women",
+      "form_url": "https://missionshakti.wcd.gov.in/",
+      "guidelines_pdf": "Mahila Shakti Kendra Guildelines.pdf",
+      "form_pdf": "Mahila Shakti Kendra Form.pdf"
+    },
+    {
+      "scheme_id": "women_002",
+      "name": "Pradhan Mantri Matru Vandana Yojana (PMMVY)",
+      "category": "women",
+      "form_url": "https://pmmvy.wcd.gov.in/",
+      "guidelines_pdf": "Pradhan Mantri Madru Yojana Guidelines....pdf",
+      "form_pdf": "Pradhan Mantri matru vandana yojana.pdf"
+    },
+    {
+      "scheme_id": "women_003",
+      "name": "Pradhan Mantri Ujjwala Yojana (PMUY)",
+      "category": "women",
+      "form_url": "https://pmuy.gov.in/",
+      "guidelines_pdf": "Pradhan Mantri Ujjawal Yojana.pdf",
+      "form_pdf": "Pradhan Mantri Ujjawal Yojana form.pdf"
+    },
+    {
+      "scheme_id": "women_004",
+      "name": "Sukanya Samriddhi Yojana",
+      "category": "women",
+      "form_url": "https://www.indiapost.gov.in/",
+      "guidelines_pdf": "Sukanya Samriddhi Yojana.pdf",
+      "form_pdf": "Sukanya Samriddhi Yojana form.pdf"
+    },
+    {
+      "scheme_id": "women_005",
+      "name": "Working Women Hostel (Sakhi Niwas)",
+      "category": "women",
+      "form_url": "https://www.spniwcd.wcd.gov.in/sakhi-niwas-working-women-hostel",
+      "guidelines_pdf": "WorkingWomenHostel_Guidelines_Exact.pdf",
+      "form_pdf": "WorkingWomenHostel_Form_Exact.pdf"
+    }
+  ]
+}
