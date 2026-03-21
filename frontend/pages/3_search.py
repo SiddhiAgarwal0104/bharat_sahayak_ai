@@ -1,49 +1,41 @@
-"""
-3_search.py
------------
-Streamlit search page — Member 3 owns this file.
-
-Features:
-- Text input for typing queries
-- Voice input (uses Member 1's voice_recorder if available, falls back gracefully)
-- Calls NLP service for intent (uses Member 2's endpoint if available)
-- Calls scheme search endpoint and displays top-3 cards
-"""
+# frontend/pages/3_search.py
+# Member 3 owns this file
+# Integrates Member 1's voice recorder and Member 2's NLP/profile endpoints
 
 import streamlit as st
 import requests
-import sys
 import os
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from components.scheme_card import show_scheme_card
-
-# ── Page config ───────────────────────────────────────────────────────────────
-st.set_page_config(page_title="Find Schemes — SahayakAI", layout="wide")
 
 BACKEND = os.getenv("BACKEND_URL", "http://localhost:8000")
 
+st.set_page_config(page_title="Find Schemes — BharatSahayakAI", layout="wide")
 
 # ── Auth check ────────────────────────────────────────────────────────────────
 token = st.session_state.get("token", "")
 if not token:
     st.warning("Please login first.")
     if st.button("Go to Login"):
-        st.switch_page("pages/1_register.py")
+        st.switch_page("pages/login.py")
     st.stop()
 
 headers = {"Authorization": f"Bearer {token}"}
 
+# ── Import Member 3's scheme card ────────────────────────────────────────────
+try:
+    from components.scheme_card import show_scheme_card
+except ImportError:
+    def show_scheme_card(scheme, token=""):
+        st.markdown(f"**{scheme.get('name')}**")
+        st.caption(scheme.get("description", "")[:150])
 
-# ── Page header ───────────────────────────────────────────────────────────────
 st.title("Find Government Schemes")
-st.caption("Search in English, Hindi, or any Indian language — type or speak your query")
+st.caption("Search in English, Hindi, or any Indian language — type or speak")
 st.divider()
 
-
-# ── Input row ─────────────────────────────────────────────────────────────────
+# ── Input row — text + voice ──────────────────────────────────────────────────
 col_input, col_voice = st.columns([4, 1])
 
+voice_query = ""
 with col_input:
     text_query = st.text_input(
         "Type your query",
@@ -52,141 +44,106 @@ with col_input:
     )
 
 with col_voice:
-    # Try to import Member 1's voice recorder — fall back gracefully if not ready
-    voice_query = ""
+    # Use Member 1's voice recorder if available
     try:
-        from components.voice_recorder import voice_recorder
-        voice_query = voice_recorder() or ""
+        from components.voice_recorder import render_voice_recorder
+        payload = render_voice_recorder("🎤 Speak")
+        if payload and payload.get("type") == "text":
+            voice_query = payload.get("content", "")
     except ImportError:
-        if st.button("Voice input\n(not ready yet)"):
-            st.info("Voice input will be available once Member 1 completes their module.")
+        if st.button("🎤 Voice\n(coming soon)"):
+            st.info("Voice module from Member 1 not ready yet.")
 
-
-# ── Category quick-filter buttons ────────────────────────────────────────────
+# ── Category filter buttons ───────────────────────────────────────────────────
 st.write("")
 st.caption("Or browse by category:")
-cat_col1, cat_col2, cat_col3, cat_col4, cat_col5 = st.columns(5)
-
+c1, c2, c3, c4, c5 = st.columns(5)
 category_filter = st.session_state.get("category_filter", "")
 
-with cat_col1:
-    if st.button("All"):
-        st.session_state["category_filter"] = ""
-        category_filter = ""
-with cat_col2:
-    if st.button("Health"):
-        st.session_state["category_filter"] = "health"
-        category_filter = "health"
-with cat_col3:
-    if st.button("Pension"):
-        st.session_state["category_filter"] = "pension"
-        category_filter = "pension"
-with cat_col4:
-    if st.button("Agriculture"):
-        st.session_state["category_filter"] = "agriculture"
-        category_filter = "agriculture"
-with cat_col5:
-    if st.button("Women"):
-        st.session_state["category_filter"] = "women"
-        category_filter = "women"
+with c1:
+    if st.button("All",         use_container_width=True): st.session_state["category_filter"] = ""; category_filter = ""
+with c2:
+    if st.button("Health",      use_container_width=True): st.session_state["category_filter"] = "health"; category_filter = "health"
+with c3:
+    if st.button("Pension",     use_container_width=True): st.session_state["category_filter"] = "pension"; category_filter = "pension"
+with c4:
+    if st.button("Agriculture", use_container_width=True): st.session_state["category_filter"] = "agriculture"; category_filter = "agriculture"
+with c5:
+    if st.button("Women",       use_container_width=True): st.session_state["category_filter"] = "women"; category_filter = "women"
 
 st.divider()
-
-
-# ── Resolve final query ───────────────────────────────────────────────────────
 final_query = voice_query or text_query or category_filter
-
 
 # ── Search ────────────────────────────────────────────────────────────────────
 if final_query:
-
     with st.spinner("Finding best schemes for you..."):
 
-        # Step 1: Get intent classification from NLP service (Member 2)
-        # Falls back to category_filter or empty intent if NLP service not ready
+        # Step 1: NLP intent — Member 2's endpoint
         try:
-            nlp_resp = requests.post(
+            nlp_resp  = requests.post(
                 f"{BACKEND}/nlp/classify",
                 json={"text": final_query, "language": "auto"},
-                headers=headers,
-                timeout=5,
+                headers=headers, timeout=5,
             ).json()
-            intent     = nlp_resp.get("intent", category_filter or "")
-            slots      = nlp_resp.get("slots", {})
-            confidence = nlp_resp.get("confidence", 0)
+            intent = nlp_resp.get("intent", category_filter or "")
+            slots  = nlp_resp.get("slots", {})
         except Exception:
-            # NLP service not ready yet — use category_filter as intent
-            intent     = category_filter or ""
-            slots      = {}
-            confidence = 0
-            nlp_resp   = {"query_text": final_query, "language": "en",
-                          "intent": intent, "slots": slots}
+            intent   = category_filter or ""
+            slots    = {}
+            nlp_resp = {"query_text": final_query, "language": "en", "intent": intent, "slots": slots}
 
-        # Step 2: Get eligible candidate IDs from profile agent (Member 2)
-        # Falls back to empty list → search all schemes
+        # Step 2: Eligible candidates — Member 2's profile agent
         try:
-            profile_resp = requests.get(
+            profile_resp  = requests.get(
                 f"{BACKEND}/profile/eligible",
                 params={"intent": intent},
-                headers=headers,
-                timeout=5,
+                headers=headers, timeout=5,
             ).json()
             candidate_ids = profile_resp.get("scheme_ids", [])
         except Exception:
-            # Profile agent not ready — pass empty list to search all schemes
             candidate_ids = []
 
-        # Step 3: Search schemes
+        # Step 3: Search — Member 3's endpoint
         try:
-            intent_obj = {
-                "query_text": final_query,
-                "language":   "en",
-                "intent":     intent,
-                "slots":      slots,
-            }
             search_resp = requests.post(
                 f"{BACKEND}/schemes/search",
-                json={"intent_obj": intent_obj, "candidate_ids": candidate_ids},
-                headers=headers,
-                timeout=10,
+                json={"intent_obj": {
+                    "query_text": final_query,
+                    "language":   "en",
+                    "intent":     intent,
+                    "slots":      slots,
+                }, "candidate_ids": candidate_ids},
+                headers=headers, timeout=10,
             )
             schemes = search_resp.json()
         except Exception as e:
             st.error(f"Search failed: {e}")
             schemes = []
 
-    # ── Results ───────────────────────────────────────────────────────────────
+    # ── Show results ──────────────────────────────────────────────────────────
     if not schemes:
         st.info("No matching schemes found. Try a different query or browse by category.")
     else:
-        # Show intent badge
         if intent:
             st.markdown(
-                f"Showing results for: "
-                f"<span style='background:#EEEDFE;color:#3D2A8A;padding:2px 10px;"
-                f"border-radius:10px;font-size:12px;font-weight:600'>"
+                f"Results for: <span style='background:#EEEDFE;color:#3D2A8A;"
+                f"padding:2px 10px;border-radius:10px;font-size:12px;font-weight:600'>"
                 f"{intent.upper()}</span>",
                 unsafe_allow_html=True,
             )
-            st.write("")
-
-        # Render scheme cards in columns
         cols = st.columns(len(schemes))
         for i, scheme in enumerate(schemes):
             with cols[i]:
                 show_scheme_card(scheme, token)
 
-# ── Default state: show recommended schemes ───────────────────────────────────
+# ── Default — show recommended ────────────────────────────────────────────────
 else:
     st.subheader("Recommended for you")
     with st.spinner("Loading recommendations..."):
         try:
-            resp = requests.get(
-                f"{BACKEND}/schemes/recommended",
-                headers=headers,
-                timeout=10,
-            )
-            recommended = resp.json()
+            recommended = requests.get(
+                f"{BACKEND}/schemes/recommended", headers=headers, timeout=10
+            ).json()
         except Exception:
             recommended = []
 
@@ -196,5 +153,5 @@ else:
             with cols[i]:
                 show_scheme_card(scheme, token)
     else:
-        st.info("Could not load recommendations. Make sure the backend is running.")
+        st.info("Backend not running. Start it with:")
         st.code("uvicorn backend.main:app --reload")

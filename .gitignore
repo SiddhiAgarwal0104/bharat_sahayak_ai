@@ -12,15 +12,21 @@ __pycache__/
 dist/
 build/
 
-# Data — PDFs and embeddings are NOT pushed to GitHub
+# Data
 data/schemes/
 data/embeddings/
+data/model/
+data/model_backup/
+*.bin
+*.safetensors
+mbert_model.zip
 
-# Cloudinary index is generated — don't need it on GitHub
-# data/cloudinary_index.json   ← keep this commented, we DO push this file
+# Cloudinary index — DO push this
+# data/cloudinary_index.json
 
 # VS Code
 .vscode/
+.vscode/settings.json
 
 # OS
 .DS_Store

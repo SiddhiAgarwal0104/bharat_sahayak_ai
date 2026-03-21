@@ -1,10 +1,5 @@
-"""
-scheme.py  —  MongoDB version
-------------------------------
-No SQLAlchemy table. Schemes are stored as plain dicts in MongoDB.
-This file defines the shape of a scheme document and helper functions.
-Member 3 owns this file.
-"""
+# backend/models/scheme.py
+# Member 3 owns this file — MongoDB document helpers
 
 from bson import ObjectId
 
@@ -21,10 +16,7 @@ def scheme_document(
     form_pdf_url: str,
     embedding_id: int,
 ) -> dict:
-    """
-    Returns a scheme dict ready to insert into MongoDB.
-    Shape matches what the rest of the code expects.
-    """
+    """Returns a scheme dict ready to insert into MongoDB."""
     return {
         "name":                 name,
         "category":             category,
@@ -40,10 +32,7 @@ def scheme_document(
 
 
 def format_scheme(doc: dict) -> dict:
-    """
-    Convert a MongoDB document to a clean dict for API responses.
-    Converts ObjectId to string so it can be JSON serialised.
-    """
+    """Convert MongoDB document to clean JSON-serialisable dict."""
     if doc is None:
         return None
     result = dict(doc)

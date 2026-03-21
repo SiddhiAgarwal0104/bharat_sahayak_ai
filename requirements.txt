@@ -1,16 +1,51 @@
+# ── Web Framework ─────────────────────────────────────────────────
 fastapi==0.111.0
 uvicorn[standard]==0.29.0
+fastapi-cli==0.0.24
+python-multipart==0.0.9
+
+# ── Data Validation ───────────────────────────────────────────────
 pydantic==2.7.1
+pydantic-settings==2.3.1
+
+# ── Auth + Security ───────────────────────────────────────────────
 python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# ── Environment ───────────────────────────────────────────────────
 python-dotenv==1.0.1
-pymongo==4.7.2
+
+# ── MongoDB ───────────────────────────────────────────────────────
+pymongo==4.7.3
+motor==3.4.0
+beanie==1.26.0
+dnspython==2.7.0
+
+# ── Member 3 — Search + Embeddings ───────────────────────────────
 sentence-transformers==2.7.0
 faiss-cpu==1.8.0
 numpy==1.26.4
 pdfplumber==0.11.0
 langdetect==1.0.9
+huggingface_hub==0.36.2
+safetensors==0.7.0
+
+# ── Member 3 — Cloudinary ─────────────────────────────────────────
 cloudinary==1.40.0
+
+# ── Member 1 — STT + Voice ────────────────────────────────────────
+openai-whisper
+audio-recorder-streamlit==0.0.10
+
+# ── Member 4 — LLM ───────────────────────────────────────────────
+google-generativeai==0.6.0
+
+# ── Frontend ──────────────────────────────────────────────────────
 streamlit==1.35.0
-requests==2.32.3
+
+# ── HTTP ──────────────────────────────────────────────────────────
+requests==2.32.5
 httpx==0.27.0
+
+# ── Testing ───────────────────────────────────────────────────────
 pytest==8.2.0

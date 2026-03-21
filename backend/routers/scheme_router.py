@@ -1,8 +1,5 @@
-"""
-scheme_router.py  —  MongoDB version
---------------------------------------
-All scheme API endpoints. Member 3 owns this file.
-"""
+# backend/routers/scheme_router.py
+# Member 3 owns this file — all scheme search endpoints
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -17,7 +14,6 @@ security      = HTTPBearer(auto_error=False)
 _search_agent = SearchAgent()
 
 
-# ── Auth helper (standalone — no dependency on Member 1) ─────────────────────
 def _get_user_obj(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if credentials is None:
         return {"user_id": "anon", "language_pref": "en", "location": ""}
@@ -34,11 +30,8 @@ def _get_user_obj(credentials: HTTPAuthorizationCredentials = Depends(security))
         return {"user_id": "anon", "language_pref": "en", "location": ""}
 
 
-# ── Endpoints ─────────────────────────────────────────────────────────────────
-
 @router.get("/recommended")
 def get_recommended(user=Depends(_get_user_obj)):
-    """Top auto-matched schemes for the logged-in user. Used on home page."""
     intent_obj = {
         "query_text": user["location"] + " government schemes",
         "language":   user["language_pref"],
@@ -50,10 +43,7 @@ def get_recommended(user=Depends(_get_user_obj)):
 
 @router.get("/by-category/{category}")
 def get_by_category(category: str):
-    """
-    Return all scheme embedding_ids + eligibility for a category.
-    Called by Member 2's profile_agent.
-    """
+    """Called by Member 2's profile_agent to get eligible scheme candidates."""
     valid = {"health", "pension", "agriculture", "women"}
     if category not in valid:
         raise HTTPException(
@@ -62,9 +52,7 @@ def get_by_category(category: str):
         )
     col     = get_schemes_collection()
     schemes = list(col.find({"category": category}, {
-        "embedding_id": 1,
-        "name": 1,
-        "eligibility_criteria": 1,
+        "embedding_id": 1, "name": 1, "eligibility_criteria": 1,
     }))
     return [
         {
@@ -79,41 +67,27 @@ def get_by_category(category: str):
 
 @router.get("/all")
 def get_all_schemes():
-    """Return all schemes — for debugging."""
     col = get_schemes_collection()
     return [format_scheme(s) for s in col.find()]
 
 
 @router.get("/{scheme_id}")
 def get_scheme(scheme_id: str):
-    """Return full details for one scheme by embedding_id."""
     col = get_schemes_collection()
     try:
-        eid = int(scheme_id)
-        doc = col.find_one({"embedding_id": eid})
+        doc = col.find_one({"embedding_id": int(scheme_id)})
     except ValueError:
         doc = None
-
     if not doc:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Scheme {scheme_id} not found.",
-        )
+        raise HTTPException(status_code=404, detail=f"Scheme {scheme_id} not found.")
     return format_scheme(doc)
 
 
 @router.post("/search")
 def search_schemes(body: dict, user=Depends(_get_user_obj)):
-    """
-    Main search endpoint called by orchestrator.
-    Body: { intent_obj: {...}, candidate_ids: [...] }
-    """
+    """Main search — called by orchestrator with intent_obj + candidate_ids."""
     intent_obj    = body.get("intent_obj")
     candidate_ids = body.get("candidate_ids", [])
-
     if not intent_obj:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Request body must include 'intent_obj'.",
-        )
+        raise HTTPException(status_code=400, detail="'intent_obj' required.")
     return _search_agent.search(intent_obj, candidate_ids)

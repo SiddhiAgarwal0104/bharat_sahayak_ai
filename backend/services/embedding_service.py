@@ -1,3 +1,4 @@
+
 """
 embedding_service.py
 --------------------
@@ -71,3 +72,5 @@ def encode_batch(texts: list) -> np.ndarray:
         batch_size=16,
     )
     return vecs.astype("float32")
+
+
