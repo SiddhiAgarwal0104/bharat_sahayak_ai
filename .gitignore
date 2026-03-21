@@ -1,10 +1,20 @@
+# Environment
 .env
+venv/
 __pycache__/
 *.pyc
-.venv/
-venv/
-.vscode/
-*.log
-node_modules/
-dist/
-build/
+*.pyo
+
+# Model files — on HuggingFace
+data/model/
+data/model_backup/
+*.bin
+*.safetensors
+mbert_model.zip
+data/embeddings/
+
+# Mac
+.DS_Store
+
+# IDE
+.vscode/settings.json
