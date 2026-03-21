@@ -1,0 +1,42 @@
+# SahayakAI — requirements.txt
+# Run: pip install -r requirements.txt
+
+# ── Web framework ──────────────────────────────────────────────────────────────
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9
+
+# ── MongoDB (Atlas or local — same driver works for both) ─────────────────────
+motor==3.4.0
+beanie==1.26.0
+pymongo==4.7.3
+
+# ── Data validation ────────────────────────────────────────────────────────────
+pydantic==2.7.1
+pydantic-settings==2.3.1
+
+# ── Auth ───────────────────────────────────────────────────────────────────────
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.0.1
+
+# ── Frontend ───────────────────────────────────────────────────────────────────
+streamlit==1.35.0
+audio-recorder-streamlit==0.0.8
+requests==2.32.3
+
+# ── Member 1 — STT & language ─────────────────────────────────────────────────
+openai-whisper
+langdetect==1.0.9
+
+# ── Member 3 — Search & embeddings ────────────────────────────────────────────
+sentence-transformers==2.7.0
+faiss-cpu==1.8.0
+numpy==1.26.4
+pdfplumber==0.11.0
+
+# ── Member 4 — LLM ────────────────────────────────────────────────────────────
+google-generativeai==0.6.0
+
+# ── Cloudinary (file uploads) ─────────────────────────────────────────────────
+cloudinary==1.40.0
