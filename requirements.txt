@@ -5,8 +5,8 @@ fastapi-cli==0.0.24
 python-multipart==0.0.9
 
 # ── Data Validation ───────────────────────────────────────────────
-pydantic==2.7.1
-pydantic-settings==2.3.1
+pydantic==2.6.4
+pydantic-settings==2.2.1
 
 # ── Auth + Security ───────────────────────────────────────────────
 python-jose[cryptography]==3.3.0
@@ -23,8 +23,8 @@ dnspython==2.7.0
 
 # ── Member 3 — Search + Embeddings ───────────────────────────────
 sentence-transformers==2.7.0
-faiss-cpu==1.8.0
-numpy==1.26.4
+faiss-cpu
+numpy
 pdfplumber==0.11.0
 langdetect==1.0.9
 huggingface_hub==0.36.2

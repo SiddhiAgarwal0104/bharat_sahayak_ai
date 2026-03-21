@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.config import settings
 from backend.db.database import connect_db, close_db
 from backend.db.vector_store import load_index
+from backend.routers.scheme_router import profile_router
 
 app = FastAPI(
     title="BharatSahayakAI",
@@ -54,6 +55,8 @@ try:
     app.include_router(scheme_router)
 except Exception as e:
     print(f"[main] scheme_router not loaded: {e}")
+
+app.include_router(profile_router)
 
 # ── Member 4 routers (added later) ───────────────────────────────────────────
 # from backend.routers.form_router import router as form_router

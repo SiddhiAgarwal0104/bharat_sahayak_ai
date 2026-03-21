@@ -43,9 +43,9 @@ with st.spinner("Loading your schemes..."):
             timeout=10
         )
         schemes = resp.json() if resp.status_code == 200 else []
-    except Exception:
+    except Exception as e:
         schemes = []
-        st.warning("Backend not reachable. Start the server first.")
+        st.warning(f"Backend error: {e}")
 
 # ── Scheme cards ─────────────────────────────────────────────────
 cat_icons = {

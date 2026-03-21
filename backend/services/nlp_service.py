@@ -4,27 +4,25 @@ import os
 import json
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from huggingface_hub import hf_hub_download
 from fastapi import APIRouter
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# ── Build absolute path to model ─────────────────────────────────
-_BASE_DIR  = os.path.dirname(os.path.dirname(os.path.dirname(
-                os.path.abspath(__file__)
-             )))
-_MODEL_REL = os.getenv("MODEL_PATH", "data/model")
-MODEL_PATH = os.path.join(_BASE_DIR, _MODEL_REL)
+HF_REPO  = os.getenv("HF_MODEL_REPO", "tanyabora/sahayakai-mbert-intent")
+HF_TOKEN = os.getenv("HF_TOKEN")
 
-print(f"Loading model from: {MODEL_PATH}")
+print(f"Loading model from HuggingFace: {HF_REPO}")
 
 # ── Load model ONCE at startup ────────────────────────────────────
-_tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
-_model     = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
+_tokenizer = AutoTokenizer.from_pretrained(HF_REPO, token=HF_TOKEN)
+_model     = AutoModelForSequenceClassification.from_pretrained(HF_REPO, token=HF_TOKEN)
 _model.eval()
 
-with open(os.path.join(MODEL_PATH, "label_map.json"), encoding="utf-8") as f:
+label_map_path = hf_hub_download(repo_id=HF_REPO, filename="label_map.json", token=HF_TOKEN)
+with open(label_map_path, encoding="utf-8") as f:
     _label_map = json.load(f)
 
 print(f"Model loaded. Intents: {list(_label_map.values())}")
@@ -63,10 +61,6 @@ def _extract_slots(text: str) -> dict:
 
 # ── Main classify function ────────────────────────────────────────
 def classify(text: str, language: str = "auto") -> dict:
-    """
-    Called by Member 1's input_agent.
-    Returns: { intent, confidence, slots }
-    """
     enc = _tokenizer(
         text,
         return_tensors="pt",

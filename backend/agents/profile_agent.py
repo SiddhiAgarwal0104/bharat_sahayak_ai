@@ -1,8 +1,7 @@
 # backend/agents/profile_agent.py
 
-import httpx
 from bson import ObjectId
-from backend.db.database import users_col
+from backend.db.database import get_db, get_schemes_collection
 from backend.utils.eligibility_rules import is_eligible
 
 
@@ -14,17 +13,17 @@ class ProfileAgent:
         intent: str
     ) -> list[str]:
         """
-        Returns list of scheme_ids the user is eligible for.
+        Returns list of scheme embedding_ids the user is eligible for.
 
         Steps:
           1. Load user from MongoDB
-          2. Fetch all schemes for the intent from Member 3's endpoint
+          2. Fetch schemes for the intent directly from DB (no HTTP call)
           3. Run eligibility rule engine on each scheme
-          4. Return only passing scheme_ids
+          4. Return only passing embedding_ids
         """
 
         # Step 1 — Load user from MongoDB
-        user_doc = users_col.find_one({"_id": ObjectId(user_id)})
+        user_doc = get_db()["users"].find_one({"_id": ObjectId(user_id)})
         if not user_doc:
             return []
 
@@ -37,26 +36,24 @@ class ProfileAgent:
             "location"     : user_doc.get("location"),
         }
 
-        # Step 2 — Get schemes for this intent from Member 3
-        # Until Member 3 is ready, this returns mock data for testing
-        try:
-            response = httpx.get(
-                f"http://localhost:8000/schemes/by-category/{intent}",
-                timeout=5.0
-            )
-            if response.status_code != 200:
-                return []
-            schemes = response.json()
-        except Exception:
-            # Member 3 not ready yet — use empty list
-            print(f"Warning: scheme service not reachable for intent={intent}")
-            return []
+        # Step 2 — Fetch schemes directly from DB (fast, no HTTP roundtrip)
+        col = get_schemes_collection()
+        query = {"category": intent} if intent != "all" else {}
+        schemes_raw = list(col.find(
+            query,
+            {"_id": 1, "embedding_id": 1, "eligibility_criteria": 1, "name": 1}
+        ))
 
-        # Step 3 — Filter by eligibility
+        # Step 3 — Filter by eligibility rules
         eligible_ids = []
-        for scheme in schemes:
+        for scheme in schemes_raw:
             criteria = scheme.get("eligibility_criteria", {})
+            if criteria is None:
+                criteria = {}
             if is_eligible(user_dict, criteria):
-                eligible_ids.append(str(scheme["id"]))
+                embedding_id = scheme.get("embedding_id")
+                if embedding_id is not None:
+                    eligible_ids.append(embedding_id)
 
+        print(f"[profile_agent] intent={intent}, eligible={len(eligible_ids)}/{len(schemes_raw)}")
         return eligible_ids

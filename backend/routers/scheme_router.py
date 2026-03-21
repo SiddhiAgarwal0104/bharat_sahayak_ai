@@ -1,17 +1,18 @@
 # backend/routers/scheme_router.py
-# Member 3 owns this file — all scheme search endpoints
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 from backend.agents.search_agent import SearchAgent
+from backend.agents.profile_agent import ProfileAgent
 from backend.db.database import get_schemes_collection
 from backend.models.scheme import format_scheme
 from backend.config import JWT_SECRET, JWT_ALGORITHM
 
-router        = APIRouter(prefix="/schemes", tags=["Schemes"])
-security      = HTTPBearer(auto_error=False)
-_search_agent = SearchAgent()
+router         = APIRouter(prefix="/schemes", tags=["Schemes"])
+profile_router = APIRouter(prefix="/profile", tags=["Profile"])
+security       = HTTPBearer(auto_error=False)
+_search_agent  = SearchAgent()
+_profile_agent = ProfileAgent()
 
 
 def _get_user_obj(credentials: HTTPAuthorizationCredentials = Depends(security)):
@@ -30,26 +31,39 @@ def _get_user_obj(credentials: HTTPAuthorizationCredentials = Depends(security))
         return {"user_id": "anon", "language_pref": "en", "location": ""}
 
 
+# ── /profile/eligible — used by search page ──────────────────────────────────
+@profile_router.get("/eligible")
+def get_eligible(intent: str = "", user=Depends(_get_user_obj)):
+    """Returns embedding_ids the logged-in user is eligible for."""
+    user_id = user["user_id"]
+    if user_id == "anon":
+        return {"scheme_ids": []}
+    ids = _profile_agent.get_eligible_scheme_ids(user_id, intent)
+    return {"scheme_ids": ids}
+
+
+# ── /schemes/recommended ─────────────────────────────────────────────────────
 @router.get("/recommended")
 def get_recommended(user=Depends(_get_user_obj)):
+    user_id = user["user_id"]
+    candidate_ids = []
+    if user_id != "anon":
+        for intent in ["health", "pension", "agriculture", "women"]:
+            ids = _profile_agent.get_eligible_scheme_ids(user_id, intent)
+            candidate_ids.extend(ids)
+
     intent_obj = {
-        "query_text": user["location"] + " government schemes",
+        "query_text": user["location"] + " government schemes benefit",
         "language":   user["language_pref"],
         "intent":     "all",
         "slots":      {},
     }
-    return _search_agent.search(intent_obj, candidate_ids=[])
+    return _search_agent.search(intent_obj, candidate_ids=candidate_ids)
 
 
+# ── /schemes/by-category/{category} ─────────────────────────────────────────
 @router.get("/by-category/{category}")
 def get_by_category(category: str):
-    """Called by Member 2's profile_agent to get eligible scheme candidates."""
-    valid = {"health", "pension", "agriculture", "women"}
-    if category not in valid:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid category. Must be one of: {valid}",
-        )
     col     = get_schemes_collection()
     schemes = list(col.find({"category": category}, {
         "embedding_id": 1, "name": 1, "eligibility_criteria": 1,
@@ -85,7 +99,6 @@ def get_scheme(scheme_id: str):
 
 @router.post("/search")
 def search_schemes(body: dict, user=Depends(_get_user_obj)):
-    """Main search — called by orchestrator with intent_obj + candidate_ids."""
     intent_obj    = body.get("intent_obj")
     candidate_ids = body.get("candidate_ids", [])
     if not intent_obj:

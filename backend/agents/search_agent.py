@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 """
 search_agent.py  —  MongoDB version
 -------------------------------------
@@ -88,11 +88,4 @@ class SearchAgent:
             scheme["match_score"]   = 0.5
             scheme["is_best_match"] = (i == 0)
             results.append(scheme)
-        return results
-=======
-"""Search agent for embedding retrieval and ranking."""
-
-
-def search_schemes(query: str) -> list[dict]:
-    return []
->>>>>>> origin/tanya_member2
+        return results 
