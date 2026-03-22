@@ -1,18 +1,18 @@
-from sqlalchemy import Column, Integer, String, Boolean, Text
-from backend.db.database import Base
+﻿from beanie import Document
+from typing import Optional
 
-class FormField(Base):
-    __tablename__ = 'form_fields'
+class FormField(Document):
+    scheme_id       : str
+    field_id        : int
+    field_name      : str
+    field_type      : str
+    required        : bool          = True
+    can_prefill     : bool          = False
+    prefill_source  : Optional[str] = None
+    instruction_en  : str
+    instruction_hi  : str
+    document_needed : Optional[str] = None
+    validation      : Optional[str] = None
 
-    id = Column(Integer, primary_key=True, index=True)
-    scheme_id = Column(String, index=True)
-    field_id = Column(Integer)
-    field_name = Column(String)
-    field_type = Column(String)
-    required = Column(Boolean, default=True)
-    can_prefill = Column(Boolean, default=False)
-    prefill_source = Column(String)
-    instruction_en = Column(Text)
-    instruction_hi = Column(Text)
-    document_needed = Column(String)
-    validation = Column(String)
+    class Settings:
+        name = "form_fields"

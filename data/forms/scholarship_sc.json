@@ -1,1 +1,55 @@
-{}
+{
+  "scheme_id": "scholarship_sc",
+  "scheme_name": "Post Matric Scholarship for SC Students",
+  "form_url": "https://scholarships.gov.in/",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Student Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name as on school certificate.",
+      "instruction_hi": "Apna poora naam school certificate ke anusar likhein.",
+      "document_needed": "School Certificate",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Caste Certificate Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your SC caste certificate number.",
+      "instruction_hi": "Apna SC jaati praman patra number darj karein.",
+      "document_needed": "Caste Certificate",
+      "validation": null
+    },
+    {
+      "field_id": 2,
+      "field_name": "Annual Family Income",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.annual_income",
+      "instruction_en": "Enter your family's total annual income in rupees.",
+      "instruction_hi": "Apne parivar ki kul varshik aay rupaye mein darj karein.",
+      "document_needed": "Income Certificate",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Course Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the name of the course you are enrolled in.",
+      "instruction_hi": "Apne course ka naam darj karein jisme aap enrolled hain.",
+      "document_needed": "Admission Letter",
+      "validation": null
+    }
+  ]
+}

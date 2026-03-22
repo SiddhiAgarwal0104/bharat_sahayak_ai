@@ -1,11 +1,103 @@
 {
   "scheme_id": "pm_kisan_001",
+  "scheme_name": "PM Kisan Samman Nidhi",
+  "form_url": "https://pmkisan.gov.in/",
   "fields": [
     {
       "field_id": 0,
       "field_name": "Applicant Name",
-      "instruction_en": "Enter your name",
-      "instruction_hi": "Apna naam likho"
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name exactly as it appears on your Aadhaar card. No initials.",
+      "instruction_hi": "Apna poora naam Aadhaar card ke anusar bilkul waise hi likhein. Koi sankshep nahi.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Father / Husband Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your father's name (or husband's name if married female).",
+      "instruction_hi": "Apne pita ka naam darj karein (vivahit mahila hain to pati ka naam).",
+      "document_needed": null,
+      "validation": null
+    },
+    {
+      "field_id": 2,
+      "field_name": "Gender",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.gender",
+      "instruction_en": "Select your gender from the dropdown.",
+      "instruction_hi": "Dropdown se apna ling chunein.",
+      "document_needed": null,
+      "validation": "Male / Female / Other"
+    },
+    {
+      "field_id": 3,
+      "field_name": "State",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.location",
+      "instruction_en": "Select your state from the dropdown list.",
+      "instruction_hi": "Dropdown se apna rajya chunein.",
+      "document_needed": null,
+      "validation": null
+    },
+    {
+      "field_id": 4,
+      "field_name": "District",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.area",
+      "instruction_en": "Enter the name of your district.",
+      "instruction_hi": "Apne zile ka naam darj karein.",
+      "document_needed": null,
+      "validation": null
+    },
+    {
+      "field_id": 5,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 12-digit Aadhaar number without spaces or dashes.",
+      "instruction_hi": "Apna 12 ank ka Aadhaar number bina kisi jagah ya dash ke darj karein.",
+      "document_needed": "Aadhaar Card",
+      "validation": "12 digits only, no spaces"
+    },
+    {
+      "field_id": 6,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your bank account number. Money will be transferred here.",
+      "instruction_hi": "Apna bank khata number darj karein. Rashi isi khate mein aaegi.",
+      "document_needed": "Bank Passbook or Cancelled Cheque",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 7,
+      "field_name": "IFSC Code",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the IFSC code of your bank branch. It is printed on your passbook.",
+      "instruction_hi": "Apni bank shaakha ka IFSC code darj karein. Yeh aapki passbook par likha hota hai.",
+      "document_needed": "Bank Passbook",
+      "validation": "11 characters: 4 letters + 0 + 6 alphanumeric"
     }
   ]
 }

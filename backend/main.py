@@ -68,14 +68,14 @@ app.include_router(form_router, prefix="/form", tags=["Forms"])
 # ── Startup / Shutdown ────────────────────────────────────────────────────────
 @app.on_event("startup")
 async def startup():
-    # Connect MongoDB with Beanie for async models (users, sessions)
     try:
         from backend.models.user import User, UserSession
-        await connect_db(document_models=[User, UserSession])
+        from backend.models.form_field import FormField
+        await connect_db(document_models=[User, UserSession, FormField])
+        print("[startup] Beanie models registered.")
     except Exception as e:
         print(f"[startup] Beanie init skipped: {e}")
 
-    # Load FAISS index for scheme search (Member 3)
     try:
         load_index()
         print("[startup] FAISS index ready.")

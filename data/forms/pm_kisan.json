@@ -1,1 +1,43 @@
-{}
+{
+  "scheme_id": "pm_kisan",
+  "scheme_name": "PM Kisan Samman Nidhi",
+  "form_url": "https://pmkisan.gov.in/",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Applicant Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name as on Aadhaar card.",
+      "instruction_hi": "Apna poora naam Aadhaar card ke anusar likhein.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 12-digit Aadhaar number.",
+      "instruction_hi": "Apna 12 ank ka Aadhaar number darj karein.",
+      "document_needed": "Aadhaar Card",
+      "validation": "12 digits only"
+    },
+    {
+      "field_id": 2,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your bank account number.",
+      "instruction_hi": "Apna bank khata number darj karein.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    }
+  ]
+}
