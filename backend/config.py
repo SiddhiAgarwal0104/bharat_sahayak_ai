@@ -11,6 +11,7 @@ MONGO_URL     = os.getenv("MONGO_URL",    "mongodb://localhost:27017")
 MONGO_DB      = os.getenv("MONGO_DB",     "sahayak")
 JWT_SECRET    = os.getenv("JWT_SECRET",   "changeme_secret_key")
 JWT_ALGORITHM = "HS256"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 MODEL_PATH    = os.getenv("MODEL_PATH",   "data/model")
 BACKEND_URL   = os.getenv("BACKEND_URL",  "http://localhost:8000")
 HF_TOKEN      = os.getenv("HF_TOKEN",     "")
@@ -38,6 +39,6 @@ class Settings:
         self.CLOUDINARY_CLOUD_NAME = CLOUDINARY_CLOUD_NAME
         self.CLOUDINARY_API_KEY   = CLOUDINARY_API_KEY
         self.CLOUDINARY_API_SECRET = CLOUDINARY_API_SECRET
-
+        self.GEMINI_API_KEY = GEMINI_API_KEY
 
 settings = Settings()

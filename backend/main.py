@@ -61,7 +61,9 @@ app.include_router(profile_router)
 # ── Member 4 routers (added later) ───────────────────────────────────────────
 # from backend.routers.form_router import router as form_router
 # app.include_router(form_router)
+from backend.routers.form_router import router as form_router
 
+app.include_router(form_router, prefix="/form", tags=["Forms"])
 
 # ── Startup / Shutdown ────────────────────────────────────────────────────────
 @app.on_event("startup")

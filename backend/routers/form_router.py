@@ -1,5 +1,9 @@
-"""Form router for step-by-step application guidance."""
-
 from fastapi import APIRouter
+from backend.agents.orchestrator import Orchestrator
 
-router = APIRouter(prefix="/form", tags=["form"])
+router = APIRouter()
+orchestrator = Orchestrator()
+
+@router.post("/query")
+def query(body: dict):
+    return orchestrator.handle(body)
