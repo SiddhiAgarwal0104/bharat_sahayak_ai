@@ -4,17 +4,42 @@ venv/
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+.Python
 
-# Model files — on HuggingFace
+# Model files — stored on HuggingFace, never commit
 data/model/
 data/model_backup/
 *.bin
 *.safetensors
+*.zip
 mbert_model.zip
 data/embeddings/
 
+# Test files
+test_nlp.py
+
 # Mac
 .DS_Store
+.AppleDouble
+.LSOverride
 
 # IDE
 .vscode/settings.json
+.vscode/
+*.swp
+*.swo
+
+# Python cache
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.cache/
+
+# Logs
+*.log
+logs/
+
+# Jupyter
+.ipynb_checkpoints/

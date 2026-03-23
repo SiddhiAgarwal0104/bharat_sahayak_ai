@@ -4,22 +4,48 @@ import os
 import json
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from huggingface_hub import snapshot_download
 from fastapi import APIRouter
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# ── Build absolute path to model ─────────────────────────────────
+# ── Paths ─────────────────────────────────────────────────────────
 _BASE_DIR  = os.path.dirname(os.path.dirname(os.path.dirname(
                 os.path.abspath(__file__)
              )))
-_MODEL_REL = os.getenv("MODEL_PATH", "data/model")
-MODEL_PATH = os.path.join(_BASE_DIR, _MODEL_REL)
+_MODEL_REL = os.getenv("MODEL_PATH",    "data/model")
+MODEL_PATH = os.path.join(_BASE_DIR,    _MODEL_REL)
+HF_TOKEN   = os.getenv("HF_TOKEN",     "")
+HF_REPO    = os.getenv("HF_MODEL_REPO","tanyabora/sahayakai-mbert-intent")
 
-print(f"Loading model from: {MODEL_PATH}")
+# ── Required files to verify model is complete ───────────────────
+_REQUIRED = ["config.json", "label_map.json", "tokenizer_config.json"]
+
+def _model_ready() -> bool:
+    return os.path.exists(MODEL_PATH) and all(
+        os.path.exists(os.path.join(MODEL_PATH, f))
+        for f in _REQUIRED
+    )
+
+# ── Auto-download from HuggingFace if not present locally ────────
+if not _model_ready():
+    print(f"Model not found locally. Downloading from HuggingFace: {HF_REPO}")
+    os.makedirs(MODEL_PATH, exist_ok=True)
+    snapshot_download(
+        repo_id        = HF_REPO,
+        token          = HF_TOKEN,
+        local_dir      = MODEL_PATH,
+        revision       = "main",
+        ignore_patterns= ["checkpoint-*", "*.zip", "*.pth"]
+    )
+    print("Download complete.")
+else:
+    print(f"Model found locally at: {MODEL_PATH}")
 
 # ── Load model ONCE at startup ────────────────────────────────────
+print(f"Loading model from: {MODEL_PATH}")
 _tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
 _model     = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
 _model.eval()
@@ -65,7 +91,13 @@ def _extract_slots(text: str) -> dict:
 def classify(text: str, language: str = "auto") -> dict:
     """
     Called by Member 1's input_agent.
-    Returns: { intent, confidence, slots }
+
+    Args:
+        text:     raw query in any Indian language
+        language: ISO code from STT (hi/en/ta/te/bn/mr)
+
+    Returns:
+        { 'intent', 'confidence', 'slots' }
     """
     enc = _tokenizer(
         text,
