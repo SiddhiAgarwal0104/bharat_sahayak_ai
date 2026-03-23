@@ -90,8 +90,11 @@ def show_scheme_card(scheme: dict, token: str = ""):
                 st.switch_page("pages/5_form_guide.py")
 
         with btn3:
-            pdf_url = scheme.get("guidelines_pdf_url", "")
-            if pdf_url:
+            pdf_url  = scheme.get("guidelines_pdf_url") or ""
+            form_url = scheme.get("form_url") or ""
+            if pdf_url.startswith("http"):
                 st.link_button("View PDF", pdf_url, use_container_width=True)
-            elif scheme.get("form_url"):
-                st.link_button("Official Site", scheme["form_url"], use_container_width=True)
+            elif form_url.startswith("http"):
+                st.link_button("Official Site", form_url, use_container_width=True)
+            else:
+                st.link_button("View PDF", "https://www.india.gov.in", use_container_width=True)

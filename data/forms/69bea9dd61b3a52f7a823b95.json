@@ -1,0 +1,91 @@
+{
+  "scheme_name": "Working Women Hostel (Sakhi Niwas)",
+  "form_url": "https://wcd.nic.in/schemes/working-women-hostel",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Applicant Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name as on Aadhaar. Working Women Hostel provides safe and affordable accommodation for working women with income up to Rs 50,000/month in cities, Rs 35,000 in smaller towns.",
+      "instruction_hi": "Aadhaar ke anusar poora naam likhein. Working Women Hostel shaharon mein 50,000/maah aur chote sheharon mein 35,000/maah tak aay wali kaamkaaji mahilaon ko surakshit aur sasti rehaaish deta hai.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Age",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.age",
+      "instruction_en": "Enter your age. The hostel also accommodates children up to age 5 if the mother needs to bring them. Working women of any age are eligible.",
+      "instruction_hi": "Apni aayu likhein. Hostel mein 5 saal tak ke bachche bhi reh sakte hain agar maata ko unhe saath laana ho. Kisi bhi aayu ki kaamkaaji mahilaayen paatra hain.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 2,
+      "field_name": "Employer / Organization",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the name of your employer or organization. A certificate of employment is required to prove you are a working woman and eligible for the hostel.",
+      "instruction_hi": "Apne niyokta ya sanstha ka naam likhein. Employment certificate chahiye jo sabit kare ki aap kaamkaaji mahila hain aur hostel ke liye paatra hain.",
+      "document_needed": "Employment Certificate",
+      "validation": "Text only"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Monthly Income",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.annual_income",
+      "instruction_en": "Enter your monthly income. Must be within prescribed limits: Rs 50,000/month for metro cities, Rs 35,000/month for other areas to be eligible.",
+      "instruction_hi": "Apni maasik aay likhein. Nirdhaarit seemaon ke andar honi chahiye: metro shaharon ke liye 50,000 rupaye/maah, anya kshetron ke liye 35,000 rupaye/maah paatrata ke liye.",
+      "document_needed": "Salary Slip or Income Certificate",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Preferred City / Location",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.location",
+      "instruction_en": "Enter the city where you need hostel accommodation. Applications are made to the specific hostel in the city where you work.",
+      "instruction_hi": "Woh shehar likhein jahan aapko hostel rehaaish chahiye. Aavedan usi hostel mein kiya jaata hai jahan aap kaam karte hain.",
+      "document_needed": null,
+      "validation": "Text only"
+    },
+    {
+      "field_id": 5,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 12-digit Aadhaar for identity verification and hostel registration.",
+      "instruction_hi": "Pahchaan verification aur hostel registration ke liye 12 ank ka Aadhaar likhein.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    },
+    {
+      "field_id": 6,
+      "field_name": "Mobile Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your mobile number for application status updates and hostel communication.",
+      "instruction_hi": "Application status updates aur hostel communication ke liye mobile number likhein.",
+      "document_needed": null,
+      "validation": "10 digits"
+    }
+  ],
+  "scheme_id": "69bea9dd61b3a52f7a823b95"
+}

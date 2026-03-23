@@ -22,16 +22,14 @@ headers = {"Authorization": f"Bearer {token}"}
 
 # ── Import Member 3's scheme card ────────────────────────────────────────────
 try:
-    from components.scheme_card import show_scheme_card
+    from frontend.components.scheme_card import show_scheme_card
 except ImportError:
-    def show_scheme_card(scheme, token=""):
-        st.markdown(f"**{scheme.get('name')}**")
-        st.caption(scheme.get("description", "")[:150])
-
-st.title("Find Government Schemes")
-st.caption("Search in English, Hindi, or any Indian language — type or speak")
-st.divider()
-
+    try:
+        from components.scheme_card import show_scheme_card
+    except ImportError:
+        def show_scheme_card(scheme, token=""):
+            st.markdown(f"**{scheme.get('name')}**")
+            st.caption(scheme.get("description", "")[:150])
 # ── Input row — text + voice ──────────────────────────────────────────────────
 col_input, col_voice = st.columns([4, 1])
 

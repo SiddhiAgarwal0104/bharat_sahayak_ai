@@ -1,0 +1,103 @@
+{
+  "scheme_id": "69bea9dd61b3a52f7a823b8a",
+  "scheme_name": "Atal Pension Yojana (APY)",
+  "form_url": "https://npscra.nsdl.co.in/nsdlcra/nationalPensionSystem/FormsAndReturns.faces",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Subscriber Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name exactly as it appears on your bank account. This must match your bank records as APY is operated through your savings bank account.",
+      "instruction_hi": "Apna poora naam bilkul waise likhein jaise aapke bank khate mein hai. Yeh aapke bank records se match karna chahiye kyunki APY aapke savings bank khate se chalaaya jaata hai.",
+      "document_needed": "Bank Passbook or Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Date of Birth",
+      "field_type": "date",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your date of birth in DD/MM/YYYY format. You must be between 18 and 40 years old to join APY. The pension amount (Rs 1000 to Rs 5000/month) depends on your age at joining.",
+      "instruction_hi": "DD/MM/YYYY format mein apni janm tithi likhein. APY join karne ke liye aapki aayu 18 se 40 saal ke beech honi chahiye. Pension ki rashi (1000 se 5000 rupaye/maah) join karne ki aayu par nirbhar karti hai.",
+      "document_needed": "Aadhaar Card or Birth Certificate",
+      "validation": "DD/MM/YYYY format"
+    },
+    {
+      "field_id": 2,
+      "field_name": "Savings Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your savings bank account number. APY contributions will be auto-debited from this account every month. Make sure sufficient balance is maintained.",
+      "instruction_hi": "Apna savings bank khata number likhein. APY ka yogdan har maah is khate se automatic kat jaayega. Dhyan rakhein ki is khate mein poori rashi hamesha ho.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Bank Branch IFSC",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the IFSC code of your bank branch. This is required to set up the auto-debit mandate for monthly APY contributions.",
+      "instruction_hi": "Apni bank shaakha ka IFSC code likhein. Maasik APY yogdan ke liye auto-debit mandate set karne ke liye yeh zaruri hai.",
+      "document_needed": "Bank Passbook",
+      "validation": "11 characters"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 12-digit Aadhaar number. Aadhaar is mandatory for APY enrollment for identity verification and KYC compliance.",
+      "instruction_hi": "Apna 12 ank ka Aadhaar number likhein. Pahchaan aur KYC ke liye APY enrollment mein Aadhaar zaruri hai.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    },
+    {
+      "field_id": 5,
+      "field_name": "Mobile Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 10-digit mobile number linked to your Aadhaar. You will receive APY account statements, contribution alerts, and PRAN details on this number.",
+      "instruction_hi": "Aadhaar se linked apna 10 ank ka mobile number likhein. Is number par APY account statement, yogdan alerts aur PRAN details milenge.",
+      "document_needed": null,
+      "validation": "10 digits, must be Aadhaar-linked"
+    },
+    {
+      "field_id": 6,
+      "field_name": "Pension Amount",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Select the monthly pension amount you want after age 60 — Rs 1000, 2000, 3000, 4000, or 5000. Higher pension means higher monthly contribution now. Government co-contributes 50% for eligible subscribers.",
+      "instruction_hi": "60 saal ki aayu ke baad chahiye maasik pension chunein — 1000, 2000, 3000, 4000 ya 5000 rupaye. Zyada pension ka matlab hai abhi zyada maasik yogdan. Paatra subscribers ke liye sarkar 50% yogdan deti hai.",
+      "document_needed": null,
+      "validation": "Select: 1000/2000/3000/4000/5000"
+    },
+    {
+      "field_id": 7,
+      "field_name": "Nominee Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the full name of your nominee (spouse preferred). In case of your death before 60, the nominee receives the pension corpus. After 60, spouse continues to receive pension after subscriber's death.",
+      "instruction_hi": "Apne nominee (pati/patni pasandida) ka poora naam likhein. 60 saal se pehle mrityu hone par nominee ko pension corpus milega. 60 ke baad subscriber ki mrityu par pati/patni ko pension milti rahegi.",
+      "document_needed": null,
+      "validation": "Letters and spaces only"
+    }
+  ]
+}

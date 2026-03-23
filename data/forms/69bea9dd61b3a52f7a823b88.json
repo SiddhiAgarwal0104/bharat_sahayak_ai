@@ -1,0 +1,91 @@
+{
+  "scheme_name": "National Pension System (NPS)",
+  "form_url": "https://enps.nsdl.com/eNPS/NationalPensionSystem.html",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Applicant Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name as on PAN card. NPS is a voluntary retirement savings scheme regulated by PFRDA. You can invest and get market-linked returns for retirement corpus.",
+      "instruction_hi": "PAN card ke anusar poora naam likhein. NPS ek swaichchhik retirement bachat yojana hai jo PFRDA dvara niyamit hai. Aap retirement corpus ke liye invest karke market-linked returns pa sakte hain.",
+      "document_needed": "PAN Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Date of Birth",
+      "field_type": "date",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter date of birth in DD/MM/YYYY. NPS is open to Indian citizens aged 18-70 years. You must contribute until age 60, after which you get pension.",
+      "instruction_hi": "DD/MM/YYYY mein janm tithi likhein. NPS 18-70 saal ke Indian nagrikon ke liye open hai. 60 saal tak yogdan karna hoga, uske baad pension milegi.",
+      "document_needed": "PAN or Aadhaar Card",
+      "validation": "DD/MM/YYYY, age 18-70"
+    },
+    {
+      "field_id": 2,
+      "field_name": "PAN Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 10-character PAN number. PAN is mandatory for NPS as contributions are tax-deductible under Section 80CCD(1) up to Rs 1.5 lakh and additional Rs 50,000 under 80CCD(1B).",
+      "instruction_hi": "Apna 10 akshar PAN number likhein. NPS ke liye PAN zaruri hai kyunki yogdan Section 80CCD(1) ke tahat 1.5 lakh aur 80CCD(1B) ke tahat additional 50,000 rupaye tak kar-katautiयोग्य hain.",
+      "document_needed": "PAN Card",
+      "validation": "10 characters: 5 letters + 4 digits + 1 letter"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter 12-digit Aadhaar number for KYC. Aadhaar-based eKYC is the fastest way to open NPS account online without visiting any office.",
+      "instruction_hi": "KYC ke liye 12 ank ka Aadhaar number likhein. Aadhaar-based eKYC se kisi bhi karyalay mein jaaye bina online NPS account sabse tezi se khula jaata hai.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your bank account number for contribution auto-debit and future pension credit.",
+      "instruction_hi": "Yogdan auto-debit aur bhavishy mein pension credit ke liye apna bank khata number likhein.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 5,
+      "field_name": "Scheme Preference",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Select Active or Auto choice. Active: you decide asset allocation between Equity (E), Corporate Bonds (C), and Government Securities (G). Auto: allocation is automatic based on age.",
+      "instruction_hi": "Active ya Auto choice chunein. Active: aap Equity (E), Corporate Bonds (C) aur Government Securities (G) ke beech allocation khud decide karte hain. Auto: aayu ke hisaab se automatic allocation hoti hai.",
+      "document_needed": null,
+      "validation": "Select: Active / Auto"
+    },
+    {
+      "field_id": 6,
+      "field_name": "Nominee Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter nominee's full name. In case of subscriber's death, the nominee receives the entire NPS corpus. You can add up to 3 nominees with percentage allocation.",
+      "instruction_hi": "Nominee ka poora naam likhein. Subscriber ki mrityu par nominee ko poora NPS corpus milega. Aap percentage allocation ke saath 3 nominees tak jod sakte hain.",
+      "document_needed": null,
+      "validation": "Letters and spaces only"
+    }
+  ],
+  "scheme_id": "69bea9dd61b3a52f7a823b88"
+}

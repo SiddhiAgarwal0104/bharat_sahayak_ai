@@ -1,0 +1,67 @@
+{
+  "scheme_name": "NPS English (CPAO)",
+  "form_url": "https://cpao.nic.in/",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Pensioner Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter full name as in pension payment order (PPO). CPAO handles pension payment for central government civil pensioners through authorized banks.",
+      "instruction_hi": "Pension Payment Order (PPO) mein darz poora naam likhein. CPAO authorized banks ke zariye kendriya sarkari civil pensioners ko pension bhugtaan karta hai.",
+      "document_needed": "PPO (Pension Payment Order)",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "PPO Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your Pension Payment Order (PPO) number. This unique number identifies your pension account and is required for any pension-related transaction.",
+      "instruction_hi": "Apna Pension Payment Order (PPO) number likhein. Yeh unique number aapka pension account pehchaanta hai aur kisi bhi pension-sambandhi lenden ke liye zaruri hai.",
+      "document_needed": "PPO Document",
+      "validation": "Alphanumeric"
+    },
+    {
+      "field_id": 2,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the bank account number where pension is to be credited. This must be a savings account in an authorized bank branch.",
+      "instruction_hi": "Bank khata number likhein jahan pension credit hogi. Yeh authorized bank ki savings account honi chahiye.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 3,
+      "field_name": "IFSC Code",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the IFSC code of your pension disbursing bank branch.",
+      "instruction_hi": "Pension vितरण karne wali bank shaakha ka IFSC code likhein.",
+      "document_needed": "Bank Passbook",
+      "validation": "11 characters"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter 12-digit Aadhaar for Jeevan Pramaan (Digital Life Certificate) which pensioners must submit annually to continue receiving pension.",
+      "instruction_hi": "Jeevan Pramaan (Digital Life Certificate) ke liye 12 ank ka Aadhaar likhein jो pensioners ko pension jaari rakhne ke liye saalana jama karna hota hai.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    }
+  ],
+  "scheme_id": "69bea9dd61b3a52f7a823b8c"
+}

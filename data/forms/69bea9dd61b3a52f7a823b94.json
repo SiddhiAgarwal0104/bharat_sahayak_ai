@@ -1,0 +1,91 @@
+{
+  "scheme_id": "69bea9dd61b3a52f7a823b94",
+  "scheme_name": "Sukanya Samriddhi Yojana",
+  "form_url": "https://www.indiapost.gov.in/Financial/Pages/Content/Sukanya-Samridhi-Account.aspx",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Guardian Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter the full name of the parent or legal guardian who is opening this account. The account is opened by the guardian on behalf of the girl child below age 10.",
+      "instruction_hi": "Account kholne wale mata-pita ya kanuni guardian ka poora naam likhein. Yeh account 10 saal se kam umar ki beti ki taraf se guardian kholta hai.",
+      "document_needed": "Guardian Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Girl Child Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the full name of the girl child for whom this SSY account is being opened. She must be below 10 years of age. Maximum 2 accounts per family (one per girl child).",
+      "instruction_hi": "Us beti ka poora naam likhein jiske liye yeh SSY account khola ja raha hai. Uski aayu 10 saal se kam honi chahiye. Ek parivar mein adhiktam 2 account (ek beti ke liye ek).",
+      "document_needed": "Girl Child Birth Certificate",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 2,
+      "field_name": "Date of Birth of Girl Child",
+      "field_type": "date",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the girl child's date of birth in DD/MM/YYYY format. She must be below 10 years old. The account matures when she turns 21 or at marriage after age 18.",
+      "instruction_hi": "Beti ki janm tithi DD/MM/YYYY format mein likhein. Uski aayu 10 saal se kam honi chahiye. Account 21 saal ki aayu par ya 18 saal baad vivah par mature hota hai.",
+      "document_needed": "Birth Certificate",
+      "validation": "DD/MM/YYYY, child must be under 10"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Initial Deposit Amount",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the initial deposit amount. Minimum Rs 250 to open the account. Maximum Rs 1.5 lakh per financial year. Current interest rate is 8.2% per annum (tax-free).",
+      "instruction_hi": "Prarambhik jama rashi likhein. Account kholne ke liye minimum 250 rupaye. Ek vittiya varsh mein adhiktam 1.5 lakh rupaye. Vartaman byaj dar 8.2% saalaana (kar mukt) hai.",
+      "document_needed": "Cash or Cheque",
+      "validation": "Minimum Rs 250, maximum Rs 1,50,000 per year"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Post Office / Bank Branch",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the name of the Post Office or authorized bank (SBI, Bank of Baroda, etc.) where you want to open this account. SSY is available at all post offices and major government banks.",
+      "instruction_hi": "Us post office ya authorized bank (SBI, Bank of Baroda, aadi) ka naam likhein jahan aap yeh account kholna chahte hain. SSY sabhi post offices aur pramukhh sarkari bankson mein available hai.",
+      "document_needed": null,
+      "validation": "Text only"
+    },
+    {
+      "field_id": 5,
+      "field_name": "Guardian Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the 12-digit Aadhaar number of the parent or guardian. This is required for KYC verification of the account holder.",
+      "instruction_hi": "Guardian ke 12 ank ke Aadhaar number likhein. Khata dharak ke KYC verification ke liye yeh zaruri hai.",
+      "document_needed": "Guardian Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    },
+    {
+      "field_id": 6,
+      "field_name": "Mobile Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the guardian's 10-digit mobile number. Account statements, deposit reminders and important updates will be sent to this number.",
+      "instruction_hi": "Guardian ka 10 ank ka mobile number likhein. Account statement, jama reminder aur zaruri updates is number par bheje jaayenge.",
+      "document_needed": null,
+      "validation": "10 digits"
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "scheme_id": "69bea9dd61b3a52f7a823b84",
+  "scheme_name": "Janani Suraksha Yojana (JSY)",
+  "form_url": "https://nhm.gov.in/index1.php?lang=1&level=3&sublinkid=841&lid=309",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Beneficiary Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter the full name of the pregnant woman or new mother exactly as it appears on her Aadhaar card. Do not use initials or abbreviations. This name will be used for all official records and fund transfers.",
+      "instruction_hi": "Garbhavati mahila ya nav prasuta ka poora naam Aadhaar card ke anusar bilkul sahi likhein. Sankshep ya short form ka upyog na karein. Yeh naam sarkari records aur paisa transfer ke liye use hoga.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Letters and spaces only, no numbers"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Husband Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the full name of your husband. This is required for identification and official records under this scheme.",
+      "instruction_hi": "Apne pati ka poora naam likhein. Yeh yojana ke tahat pahchaan aur sarkari records ke liye zaruri hai.",
+      "document_needed": null,
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 2,
+      "field_name": "Age",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.age",
+      "instruction_en": "Enter your current age in years. You must be 19 years or older to be eligible for JSY benefits.",
+      "instruction_hi": "Apni vartaman aayu saal mein likhein. JSY ka labh paane ke liye aapki aayu 19 saal ya usse adhik honi chahiye.",
+      "document_needed": "Aadhaar Card or Birth Certificate",
+      "validation": "Numbers only, must be 19 or above"
+    },
+    {
+      "field_id": 3,
+      "field_name": "State",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.location",
+      "instruction_en": "Select your state from the dropdown. JSY gives higher cash assistance to women in Low Performing States (LPS) like UP, Bihar, Rajasthan, MP, Jharkhand, Odisha, Uttarakhand, J&K and Assam.",
+      "instruction_hi": "Dropdown se apna rajya chunein. JSY kam pradarshan wale rajyon jaise UP, Bihar, Rajasthan, MP, Jharkhand, Odisha, Uttarakhand, J&K aur Assam mein adhik rashi deta hai.",
+      "document_needed": null,
+      "validation": "Select from list"
+    },
+    {
+      "field_id": 4,
+      "field_name": "District",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.area",
+      "instruction_en": "Enter the name of your district where you currently live and where the delivery will take place.",
+      "instruction_hi": "Apne zile ka naam likhein jahan aap abhi rehti hain aur jahan prasav hoga.",
+      "document_needed": null,
+      "validation": "Text only"
+    },
+    {
+      "field_id": 5,
+      "field_name": "Village/Ward",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the name of your village (rural) or ward number (urban). This determines whether you qualify for rural or urban JSY rates.",
+      "instruction_hi": "Apne gaon ka naam (gramin) ya ward number (shahari) likhein. Isse pata chalega ki aap gramin ya shahari JSY dar ke liye yogya hain.",
+      "document_needed": null,
+      "validation": "Text or number"
+    },
+    {
+      "field_id": 6,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 12-digit Aadhaar number without spaces or dashes. This is mandatory for DBT (Direct Benefit Transfer) of JSY cash assistance to your bank account.",
+      "instruction_hi": "Apna 12 ank ka Aadhaar number bina kisi space ya dash ke likhein. JSY ki rashi seedhe aapke bank khate mein transfer karne ke liye yeh zaruri hai.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits, no spaces"
+    },
+    {
+      "field_id": 7,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your bank account number where the JSY cash assistance will be deposited. Rural women get Rs 1400 and urban women get Rs 1000 directly in this account.",
+      "instruction_hi": "Apna bank khata number likhein jahan JSY ki rashi aayegi. Gramin mahilaon ko 1400 rupaye aur shahari mahilaon ko 1000 rupaye seedhe isi khate mein milenge.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 8,
+      "field_name": "IFSC Code",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the 11-character IFSC code of your bank branch. It is printed on your passbook and cheque book. Example: SBIN0001234",
+      "instruction_hi": "Apni bank shaakha ka 11 akshar ka IFSC code likhein. Yeh aapki passbook aur cheque book par likha hota hai. Udaharan: SBIN0001234",
+      "document_needed": "Bank Passbook",
+      "validation": "11 characters: 4 letters + 0 + 6 alphanumeric"
+    },
+    {
+      "field_id": 9,
+      "field_name": "Health Facility Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the name of the government hospital or accredited private hospital where you plan to deliver. JSY benefit is only given for institutional deliveries.",
+      "instruction_hi": "Us sarkari aspatal ya maanyata prapt niji aspatal ka naam likhein jahan aap prasav karana chahti hain. JSY ka labh sirf aspatal mein prasav par milta hai.",
+      "document_needed": "Hospital registration card if available",
+      "validation": "Text only"
+    }
+  ]
+}

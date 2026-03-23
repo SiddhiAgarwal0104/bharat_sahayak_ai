@@ -1,0 +1,79 @@
+{
+  "scheme_name": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+  "form_url": "https://pmfby.gov.in/",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Farmer Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name as on Aadhaar. PMFBY provides crop insurance at very low premium: 2% for Kharif, 1.5% for Rabi, and 5% for commercial/horticultural crops.",
+      "instruction_hi": "Aadhaar ke anusar poora naam likhein. PMFBY bahut kam premium par fasal beema deti hai: Kharif ke liye 2%, Rabi ke liye 1.5%, aur commercial/horticultural fasalon ke liye 5%.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Survey / Khasra Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your land survey or Khasra number from land records. This identifies the specific plot to be insured under PMFBY.",
+      "instruction_hi": "Bhumi records se apna survey ya Khasra number likhein. Isse PMFBY ke tahat beema ki jaane wali vishesh bhoomi pehchaani jaati hai.",
+      "document_needed": "Khasra / Land Records",
+      "validation": "Alphanumeric"
+    },
+    {
+      "field_id": 2,
+      "field_name": "Crop Name",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Select the crop you want to insure. PMFBY covers food crops (cereals, millets, pulses), oilseeds, and annual commercial/horticultural crops against natural calamities.",
+      "instruction_hi": "Jis fasal ka beema karana chahte hain woh chunein. PMFBY khadya fasalon (anaaj, baajra, dal), tilahanon, aur varshik commercial/horticultural fasalon ko prakritik aapda se bachaata hai.",
+      "document_needed": "Sowing Certificate if available",
+      "validation": "Select from list"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Sown Area (Hectares)",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the area sown in hectares. The insurance premium and claim amount are calculated based on this area. Only the notified crops in notified areas are eligible.",
+      "instruction_hi": "Boya gaya kshetrafal hectare mein likhein. Beema premium aur claim rashi isi kshetrafal ke aadhar par calculate ki jaati hai. Sirf notified kshetron mein notified fasalon ko hi beema milta hai.",
+      "document_needed": "Land Records",
+      "validation": "Decimal number in hectares"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your bank account number for claim settlement. PMFBY claim amounts are transferred directly to farmer's bank account via DBT.",
+      "instruction_hi": "Claim settlement ke liye apna bank khata number likhein. PMFBY claim rashi DBT se seedhe kisan ke bank khate mein transfer ki jaati hai.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 5,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter 12-digit Aadhaar for KYC and DBT claim transfer.",
+      "instruction_hi": "KYC aur DBT claim transfer ke liye 12 ank ka Aadhaar likhein.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    }
+  ],
+  "scheme_id": "69bea9dd61b3a52f7a823b8e"
+}

@@ -8,6 +8,7 @@ from backend.config import settings
 from backend.db.database import connect_db, close_db
 from backend.db.vector_store import load_index
 from backend.routers.scheme_router import profile_router
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
     title="BharatSahayakAI",
@@ -23,6 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount("/pdfs", StaticFiles(directory="data/schemes"), name="pdfs")
 # ── Member 1 routers ──────────────────────────────────────────────────────────
 try:
     from backend.routers.auth_router import router as auth_router

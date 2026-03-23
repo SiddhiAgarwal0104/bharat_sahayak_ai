@@ -1,0 +1,79 @@
+{
+  "scheme_name": "NPS Government Employees",
+  "form_url": "https://npscra.nsdl.co.in/",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Employee Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name as in government service records. NPS for government employees: 10% of basic+DA deducted from salary, government contributes 14%.",
+      "instruction_hi": "Sarkari seva records mein darz poora naam likhein. Sarkari karamchariyon ke liye NPS: basic+DA ka 10% salary se kata jaata hai, sarkar 14% ka yogdan deti hai.",
+      "document_needed": "Service Book",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Employee ID",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your government employee ID number. This is used to link your NPS account with your salary account for automatic contribution deduction.",
+      "instruction_hi": "Apna sarkari karamchari ID number likhein. Isse aapka NPS account aapke salary account se link kiya jaata hai automatic yogdan katautti ke liye.",
+      "document_needed": "Employee ID Card",
+      "validation": "Alphanumeric"
+    },
+    {
+      "field_id": 2,
+      "field_name": "Ministry / Department",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the name of your Ministry or Department. This determines your Nodal Officer who processes NPS contributions and manages your PRAN.",
+      "instruction_hi": "Apne Mantralaya ya Vibhag ka naam likhein. Isse aapke Nodal Officer ka pata chalta hai jo NPS yogdan process karta hai aur aapka PRAN manage karta hai.",
+      "document_needed": "Appointment Order",
+      "validation": "Text only"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Date of Joining Service",
+      "field_type": "date",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your government service joining date. NPS applies to all central government employees joining on or after January 1, 2004.",
+      "instruction_hi": "Sarkari seva mein joining tithi likhein. NPS un sabhi kendriya sarkari karamchariyon par laagu hota hai jo 1 January 2004 ko ya uske baad joined hain.",
+      "document_needed": "Appointment Letter",
+      "validation": "DD/MM/YYYY"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 12-digit Aadhaar number for PRAN generation and KYC verification.",
+      "instruction_hi": "PRAN generation aur KYC verification ke liye 12 ank ka Aadhaar number likhein.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    },
+    {
+      "field_id": 5,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your salary bank account number for NPS contribution deduction.",
+      "instruction_hi": "NPS yogdan katautti ke liye apna salary bank khata number likhein.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    }
+  ],
+  "scheme_id": "69bea9dd61b3a52f7a823b89"
+}

@@ -1,0 +1,91 @@
+{
+  "scheme_name": "Pradhan Mantri Matru Vandana Yojana (PMMVY)",
+  "form_url": "https://wcd.nic.in/schemes/pradhan-mantri-matru-vandana-yojana",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Beneficiary Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter the pregnant or lactating woman's full name as on Aadhaar. PMMVY provides Rs 5000 in 3 installments for first living child to compensate wage loss during pregnancy.",
+      "instruction_hi": "Garbhavati ya dhoodh pilane wali mahila ka poora naam Aadhaar ke anusar likhein. PMMVY pehle jeevan shishu ke liye garbhavastha mein aay nuksaan ki bharpayi ke liye 3 kistoon mein 5000 rupaye deti hai.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Husband Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter husband's full name. Required for PMMVY registration and family identification.",
+      "instruction_hi": "Pati ka poora naam likhein. PMMVY registration aur parivar pahchaan ke liye zaruri hai.",
+      "document_needed": null,
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 2,
+      "field_name": "LMP Date",
+      "field_type": "date",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the date of Last Menstrual Period (LMP) in DD/MM/YYYY format. This confirms pregnancy registration which is needed for the first installment of Rs 1000.",
+      "instruction_hi": "Antim masik dharm (LMP) ki tithi DD/MM/YYYY mein likhein. Isse garbhavastha panjikaran ki pushti hoti hai jo pehli kist 1000 rupaye ke liye zaruri hai.",
+      "document_needed": "MCP Card",
+      "validation": "DD/MM/YYYY"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the woman's 12-digit Aadhaar number. All 3 PMMVY installments (Rs 1000 + Rs 2000 + Rs 2000) are transferred directly via DBT to the bank account linked with this Aadhaar.",
+      "instruction_hi": "Mahila ka 12 ank ka Aadhaar number likhein. PMMVY ki teenon kistaan (1000+2000+2000 rupaye) seedhe is Aadhaar se linked bank khate mein DBT se transfer hoti hain.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your bank account number. The 3 installments of PMMVY will be credited here: Rs 1000 on pregnancy registration, Rs 2000 after first antenatal check-up, Rs 2000 after delivery and vaccination.",
+      "instruction_hi": "Apna bank khata number likhein. PMMVY ki 3 kistaan yahan credit hongi: 1000 rupaye garbhavastha registration par, 2000 rupaye pehli antenatal jaanch ke baad, 2000 rupaye prasav aur teekaakaran ke baad.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 5,
+      "field_name": "IFSC Code",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the 11-character IFSC code of your bank branch for direct benefit transfer.",
+      "instruction_hi": "Direct benefit transfer ke liye apni bank shaakha ka 11 akshar IFSC code likhein.",
+      "document_needed": "Bank Passbook",
+      "validation": "11 characters"
+    },
+    {
+      "field_id": 6,
+      "field_name": "AWC / Health Centre",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the name of your Anganwadi Centre (AWC) or health facility where you are registered for antenatal care. PMMVY applications are submitted through AWC or Approved Health Facility (AHF).",
+      "instruction_hi": "Apne Anganwadi Kendra (AWC) ya swasthya kendra ka naam likhein jahan aapka antenatal care ke liye panjikaran hai. PMMVY aavedan AWC ya Approved Health Facility (AHF) ke zariye jama kiye jaate hain.",
+      "document_needed": "MCP Card",
+      "validation": "Text only"
+    }
+  ],
+  "scheme_id": "69bea9dd61b3a52f7a823b86"
+}

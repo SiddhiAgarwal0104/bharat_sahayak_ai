@@ -1,0 +1,91 @@
+{
+  "scheme_name": "Pradhan Mantri Ujjwala Yojana (PMUY)",
+  "form_url": "https://www.pmujjwalayojana.com/",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Applicant Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter the woman's full name as on Aadhaar. PMUY provides free LPG connection (deposit-free) to women from BPL households. Applicant must be a woman aged 18 or above.",
+      "instruction_hi": "Mahila ka poora naam Aadhaar ke anusar likhein. PMUY BPL parivaron ki mahilaon ko muft LPG connection (deposit-free) deti hai. Avedan karne wali mahila ki aayu 18 saal ya adhik honi chahiye.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Age",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.age",
+      "instruction_en": "Enter your age. You must be 18 years or older. PMUY is for women from SC/ST households, PMAY beneficiaries, AAY, forest dwellers, Most Backward Classes, tea garden workers etc.",
+      "instruction_hi": "Apni aayu likhein. 18 saal ya adhik hona zaruri hai. PMUY SC/ST parivaron ki mahilaon, PMAY labhaarthiyon, AAY, jungle mein rehne walon, Ati Pichhde Vargon, chai bagaan workers aadi ke liye hai.",
+      "document_needed": "Age Proof (Aadhaar)",
+      "validation": "18 or above"
+    },
+    {
+      "field_id": 2,
+      "field_name": "BPL Ration Card Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your BPL (Below Poverty Line) ration card number. This establishes eligibility for PMUY. Households in SECC-2011 database are also eligible.",
+      "instruction_hi": "Apna BPL (Garibi Rekha se Neeche) ration card number likhein. Isse PMUY ke liye paatrata siddh hoti hai. SECC-2011 database mein shaamil parivaar bhi paatra hain.",
+      "document_needed": "BPL Ration Card",
+      "validation": "Alphanumeric"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Address",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your complete residential address where the LPG connection will be installed. The gas agency will verify this address before releasing the connection.",
+      "instruction_hi": "Apna poora awasiya pata likhein jahan LPG connection lagaya jaayega. Gas agency connection jaari karne se pehle yeh pata verify karegi.",
+      "document_needed": "Address Proof",
+      "validation": "Complete address"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your bank account number. PMUY provides interest-free loan for first refill and hot plate. Subsidy on LPG cylinders is transferred directly to this account via PAHAL scheme.",
+      "instruction_hi": "Apna bank khata number likhein. PMUY pehli refill aur hot plate ke liye byaj-mukt loan deti hai. LPG cylinders par subsidy PAHAL yojana se seedhe isi khate mein transfer hoti hai.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 5,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter 12-digit Aadhaar. Must be linked to bank account for LPG subsidy transfer under PAHAL (DBTL) scheme.",
+      "instruction_hi": "12 ank ka Aadhaar likhein. PAHAL (DBTL) yojana ke tahat LPG subsidy transfer ke liye bank account se linked hona chahiye.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    },
+    {
+      "field_id": 6,
+      "field_name": "Mobile Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 10-digit mobile number for LPG booking and cylinder delivery updates.",
+      "instruction_hi": "LPG booking aur cylinder delivery updates ke liye apna 10 ank ka mobile number likhein.",
+      "document_needed": null,
+      "validation": "10 digits"
+    }
+  ],
+  "scheme_id": "69bea9dd61b3a52f7a823b93"
+}

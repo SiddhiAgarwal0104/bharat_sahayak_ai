@@ -1,0 +1,103 @@
+{
+  "scheme_name": "EPF Pension Withdrawal",
+  "form_url": "https://unifiedportal-mem.epfindia.gov.in/memberinterface/",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Member Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name as registered with EPFO. This must exactly match your EPF account records. Any discrepancy will delay your pension withdrawal claim.",
+      "instruction_hi": "EPFO mein registered apna poora naam likhein. Yeh EPF account records se bilkul match karna chahiye. Koi bhi antar aapke pension nikaasi claim mein deri karega.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "UAN Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 12-digit Universal Account Number (UAN). This is your unique EPF identity number. You can find it on your salary slip or by logging into the EPFO member portal.",
+      "instruction_hi": "Apna 12 ank ka Universal Account Number (UAN) likhein. Yeh aapka EPF ki unique pehchaan sankhya hai. Salary slip par ya EPFO member portal mein login karke pata kar sakte hain.",
+      "document_needed": "UAN Card or Salary Slip",
+      "validation": "Exactly 12 digits"
+    },
+    {
+      "field_id": 2,
+      "field_name": "PF Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your EPF account number in format: STATE/OFFICE/ESTABLISHMENT CODE/EXTENSION/ACCOUNT. Example: MH/BAN/0012345/000/0000001. Found on your salary slip.",
+      "instruction_hi": "Apna EPF account number format mein likhein: RAJYA/KARYALAY/STHAPNA CODE/EXTENSION/KHATA. Udaharan: MH/BAN/0012345/000/0000001. Salary slip par milega.",
+      "document_needed": "Salary Slip",
+      "validation": "Format: STATE/OFFICE/ESTCODE/EXT/ACCOUNT"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Date of Joining",
+      "field_type": "date",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your date of joining the EPF-covered establishment in DD/MM/YYYY format. This determines your total contribution period and pension eligibility.",
+      "instruction_hi": "DD/MM/YYYY mein EPF-covered sanstha mein joining ki tithi likhein. Isse aapki kul yogdan avadhi aur pension paatrata tay hoti hai.",
+      "document_needed": "Appointment Letter",
+      "validation": "DD/MM/YYYY"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Date of Exit",
+      "field_type": "date",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your last working date in DD/MM/YYYY format. For pension withdrawal (Form 10C), you must have at least 6 months of service but less than 10 years.",
+      "instruction_hi": "DD/MM/YYYY mein apni antim kaarya tithi likhein. Pension nikaasi (Form 10C) ke liye kam se kam 6 mahine lekin 10 saal se kam service honi chahiye.",
+      "document_needed": "Relieving Letter",
+      "validation": "DD/MM/YYYY"
+    },
+    {
+      "field_id": 5,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your bank account number where the pension withdrawal amount will be credited. This account must be seeded with Aadhaar for online claim processing.",
+      "instruction_hi": "Apna bank khata number likhein jahan pension nikaasi rashi credit hogi. Online claim processing ke liye yeh khata Aadhaar se seeded hona chahiye.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 6,
+      "field_name": "IFSC Code",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the 11-character IFSC code of your bank branch.",
+      "instruction_hi": "Apni bank shaakha ka 11 akshar IFSC code likhein.",
+      "document_needed": "Bank Passbook",
+      "validation": "11 characters"
+    },
+    {
+      "field_id": 7,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 12-digit Aadhaar number. Aadhaar must be linked to your UAN for online EPF/EPS withdrawal claim.",
+      "instruction_hi": "Apna 12 ank ka Aadhaar number likhein. Online EPF/EPS nikaasi claim ke liye Aadhaar UAN se linked hona chahiye.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    }
+  ],
+  "scheme_id": "69bea9dd61b3a52f7a823b87"
+}

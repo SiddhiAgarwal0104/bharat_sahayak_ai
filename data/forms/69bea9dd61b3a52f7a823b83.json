@@ -1,0 +1,91 @@
+{
+  "scheme_name": "Ayushman Bharat PM-JAY",
+  "form_url": "https://pmjay.gov.in/",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Applicant Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name exactly as on your Aadhaar card. This will be used to verify your identity against the PM-JAY beneficiary database. Even a small spelling difference can cause rejection.",
+      "instruction_hi": "Apna poora naam bilkul Aadhaar card ke anusar likhein. Isse PM-JAY labhaarthi database mein aapki pahchaan verify ki jaayegi. Choti si bhi galti aveekar ka kaaran ban sakti hai.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Age",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.age",
+      "instruction_en": "Enter your current age in years. PM-JAY covers all family members regardless of age. Senior citizens and children are specially prioritized.",
+      "instruction_hi": "Apni vartaman aayu saal mein likhein. PM-JAY parivar ke sabhi sadasyon ko cover karti hai chahe aayu kuch bhi ho. Buzyurg aur bachche vishesh roop se praathamikta mein hain.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 2,
+      "field_name": "State",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.location",
+      "instruction_en": "Select your home state. PM-JAY provides health coverage up to Rs 5 lakh per family per year at empanelled hospitals across India.",
+      "instruction_hi": "Apna rajya chunein. PM-JAY poore Bharat mein empanelled hospitals mein parivar ko saal mein 5 lakh rupaye tak ka swasthya coverage deti hai.",
+      "document_needed": null,
+      "validation": "Select from list"
+    },
+    {
+      "field_id": 3,
+      "field_name": "District",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.area",
+      "instruction_en": "Enter your district name. This helps identify the nearest empanelled hospitals under PM-JAY in your area.",
+      "instruction_hi": "Apne zile ka naam likhein. Isse aapke naazdik PM-JAY empanelled hospitals pata karne mein madad milti hai.",
+      "document_needed": null,
+      "validation": "Text only"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 12-digit Aadhaar number. This is used to verify your eligibility in the SECC database and generate your PM-JAY e-card.",
+      "instruction_hi": "Apna 12 ank ka Aadhaar number likhein. Isse SECC database mein aapki paatrata verify karke PM-JAY e-card banaya jaata hai.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    },
+    {
+      "field_id": 5,
+      "field_name": "Ration Card Number",
+      "field_type": "text",
+      "required": false,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your ration card number if available. PM-JAY primarily covers families in SECC 2011 database and beneficiaries of RSBY. Ration card helps verify eligibility.",
+      "instruction_hi": "Agar ho to apna ration card number likhein. PM-JAY SECC 2011 database aur RSBY labhaarthiyon ke parivaron ko cover karti hai. Ration card paatrata verify karne mein madad karta hai.",
+      "document_needed": "Ration Card",
+      "validation": "Alphanumeric"
+    },
+    {
+      "field_id": 6,
+      "field_name": "Mobile Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 10-digit mobile number. Your PM-JAY e-card and hospital treatment updates will be sent to this number via SMS.",
+      "instruction_hi": "Apna 10 ank ka mobile number likhein. Aapka PM-JAY e-card aur aspatal ilaaj ki updates SMS se is number par bheji jaayengi.",
+      "document_needed": null,
+      "validation": "10 digits"
+    }
+  ],
+  "scheme_id": "69bea9dd61b3a52f7a823b83"
+}

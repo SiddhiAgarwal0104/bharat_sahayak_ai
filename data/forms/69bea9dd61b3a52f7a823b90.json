@@ -1,0 +1,79 @@
+{
+  "scheme_name": "Kisan Credit Card (KCC)",
+  "form_url": "https://www.nabard.org/content1.aspx?id=572&catid=23&mid=530",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Applicant Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name as on Aadhaar. KCC provides flexible credit for agricultural needs at subsidized interest rate of 7% p.a. (effective 4% with interest subvention).",
+      "instruction_hi": "Aadhaar ke anusar poora naam likhein. KCC 7% saalaana rin par krishi zaruraton ke liye flexible credit deta hai (interest subvention ke saath effective 4%).",
+      "document_needed": "Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Land Area",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your cultivated land area in hectares. KCC credit limit is based on scale of finance for the crop, land area, and post-harvest expenses.",
+      "instruction_hi": "Apna jot bhoomi kshetrafal hectare mein likhein. KCC ki credit limit fasal ke liye scale of finance, bhoomi kshetrafal aur post-harvest kharche par aadharit hai.",
+      "document_needed": "Land Records",
+      "validation": "Decimal in hectares"
+    },
+    {
+      "field_id": 2,
+      "field_name": "Crop Details",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the crops you cultivate (e.g., wheat, rice, cotton). KCC covers crop cultivation, post-harvest expenses, produce marketing, consumption requirements, and allied activities.",
+      "instruction_hi": "Aap jo fasalyaan ugaate hain unka naam likhein (jaise gehu, chawal, kapas). KCC fasal upaaj, post-harvest kharche, upaj marketing, upabhog zaruraton aur allied activities ko cover karta hai.",
+      "document_needed": "Sowing Certificate",
+      "validation": "Text only"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your existing bank account number. KCC is issued as a revolving credit facility linked to your savings account for easy withdrawal and repayment.",
+      "instruction_hi": "Apna maujuda bank khata number likhein. KCC aapke savings account se linked revolving credit facility ke roop mein jaari kiya jaata hai asaan nikaasi aur bhugtaan ke liye.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter 12-digit Aadhaar. KCC is now linked with PM-KISAN — PM-KISAN beneficiaries can get KCC with simplified procedures.",
+      "instruction_hi": "12 ank ka Aadhaar likhein. KCC ab PM-KISAN se linked hai — PM-KISAN labhaarthi simplified prakriyaon se KCC pa sakte hain.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    },
+    {
+      "field_id": 5,
+      "field_name": "Mobile Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 10-digit mobile number for KCC account alerts, repayment reminders and SMS banking.",
+      "instruction_hi": "KCC account alerts, bhugtaan reminders aur SMS banking ke liye apna 10 ank ka mobile number likhein.",
+      "document_needed": null,
+      "validation": "10 digits"
+    }
+  ],
+  "scheme_id": "69bea9dd61b3a52f7a823b90"
+}

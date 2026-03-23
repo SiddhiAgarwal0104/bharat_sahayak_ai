@@ -48,10 +48,10 @@ with col2:
         user_gender = profile.get("gender", "")
         user_pwd    = profile.get("pwd_status", False)
         checks = []
-        if "min_age" in criteria:
+        if "min_age" in criteria and criteria["min_age"] is not None:
             ok = user_age >= criteria["min_age"]
             checks.append((ok, "Age " + str(criteria["min_age"]) + "+ years (you: " + str(user_age) + ")"))
-        if "max_age" in criteria:
+        if "max_age" in criteria and criteria["max_age"] is not None:
             ok = user_age <= criteria["max_age"]
             checks.append((ok, "Age up to " + str(criteria["max_age"]) + " years"))
         if criteria.get("max_income"):
@@ -88,6 +88,7 @@ with btn1:
                 )
                 if resp.ok:
                     st.session_state["explanation"] = resp.json().get("text", "")
+                    st.session_state["explanation_audio"] = None
                 else:
                     st.error("Error " + str(resp.status_code) + ": " + resp.text)
             except Exception as e:
@@ -109,3 +110,32 @@ if st.session_state.get("explanation"):
     st.markdown("---")
     st.subheader("Explanation")
     st.markdown(st.session_state["explanation"])
+
+    if st.button("Listen to Explanation"):
+        with st.spinner("Generating audio..."):
+            try:
+                from gtts import gTTS
+                import tempfile
+                import os
+                import re
+
+                lang_map = {
+                    "hi": "hi", "en": "en", "ta": "ta",
+                    "te": "te", "bn": "bn", "mr": "mr"
+                }
+                user_lang  = profile.get("language_pref", "hi")
+                gtts_lang  = lang_map.get(user_lang, "hi")
+                clean_text = re.sub(r'\*\*|__|\*|_|#', '', st.session_state["explanation"])
+
+                tts = gTTS(text=clean_text, lang=gtts_lang, slow=False)
+                tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
+                tts.save(tmp.name)
+                tmp.close()
+
+                with open(tmp.name, "rb") as f:
+                    audio_bytes = f.read()
+                st.audio(audio_bytes, format="audio/mp3")
+                os.unlink(tmp.name)
+
+            except Exception as e:
+                st.error("Could not generate audio: " + str(e))

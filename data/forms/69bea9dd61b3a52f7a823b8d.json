@@ -1,0 +1,151 @@
+{
+  "scheme_id": "69bea9dd61b3a52f7a823b8d",
+  "scheme_name": "PM Kisan Samman Nidhi (PM-KISAN)",
+  "form_url": "https://pmkisan.gov.in/",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Farmer Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name exactly as it appears on your Aadhaar card. This must match perfectly as it will be verified against Aadhaar database for fund transfer of Rs 6000 per year.",
+      "instruction_hi": "Apna poora naam bilkul waise likhein jaise Aadhaar card par hai. Yeh bilkul sahi hona chahiye kyunki 6000 rupaye saalaana transfer ke liye Aadhaar se match kiya jaayega.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Father Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your father's full name. For married women, enter husband's name. This is used for identity verification.",
+      "instruction_hi": "Apne pita ka poora naam likhein. Vivahit mahila apne pati ka naam likhein. Pahchaan ke liye yeh zaruri hai.",
+      "document_needed": null,
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 2,
+      "field_name": "Gender",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.gender",
+      "instruction_en": "Select your gender — Male, Female, or Other. This is required for PM-KISAN registration.",
+      "instruction_hi": "Apna ling chunein — Purush, Mahila, ya Anya. PM-KISAN registration ke liye yeh zaruri hai.",
+      "document_needed": null,
+      "validation": "Select: Male / Female / Other"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Category",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.caste",
+      "instruction_en": "Select your category — General, SC, ST, or OBC. This is used for record-keeping. All categories are eligible for PM-KISAN.",
+      "instruction_hi": "Apni shrenee chunein — Samanya, SC, ST, ya OBC. Yeh record ke liye hai. Saari shreniyan PM-KISAN ke liye paatra hain.",
+      "document_needed": "Caste Certificate if SC/ST/OBC",
+      "validation": "Select from list"
+    },
+    {
+      "field_id": 4,
+      "field_name": "State",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.location",
+      "instruction_en": "Select the state where your agricultural land is located. This must be the state where you own and cultivate land.",
+      "instruction_hi": "Apni krishi bhumi jis rajya mein hai woh rajya chunein. Yeh wahi rajya hona chahiye jahan aapki zameen hai aur aap kheti karte hain.",
+      "document_needed": null,
+      "validation": "Select from list"
+    },
+    {
+      "field_id": 5,
+      "field_name": "District",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.area",
+      "instruction_en": "Enter the district where your agricultural land is located.",
+      "instruction_hi": "Apni krishi bhumi ke zile ka naam likhein.",
+      "document_needed": null,
+      "validation": "Text only"
+    },
+    {
+      "field_id": 6,
+      "field_name": "Sub-District / Tehsil",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your tehsil or sub-district name. This is the administrative unit below the district level where your land records are maintained.",
+      "instruction_hi": "Apni tehsil ya sub-district ka naam likhein. Yeh district se neeche ka prashasan ikai hai jahan aapke bhumi records rakhe jaate hain.",
+      "document_needed": "Land Records (Khasra/Khatauni)",
+      "validation": "Text only"
+    },
+    {
+      "field_id": 7,
+      "field_name": "Village",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the name of your village where your agricultural land is located.",
+      "instruction_hi": "Apne us gaon ka naam likhein jahan aapki krishi bhumi hai.",
+      "document_needed": null,
+      "validation": "Text only"
+    },
+    {
+      "field_id": 8,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 12-digit Aadhaar number without spaces. Aadhaar is mandatory for PM-KISAN. The Rs 2000 installments (3 per year) will be linked to this Aadhaar.",
+      "instruction_hi": "Bina space ke apna 12 ank ka Aadhaar number likhein. PM-KISAN ke liye Aadhaar zaruri hai. 2000 rupaye ki kist (saal mein 3 baar) isi Aadhaar se judi hogi.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    },
+    {
+      "field_id": 9,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your bank account number linked to Aadhaar. PM-KISAN transfers Rs 2000 every 4 months (3 installments = Rs 6000/year) directly to this account.",
+      "instruction_hi": "Aadhaar se linked apna bank khata number likhein. PM-KISAN har 4 mahine 2000 rupaye (3 kist = 6000 rupaye/saal) seedhe isi khate mein bhejtaa hai.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 10,
+      "field_name": "IFSC Code",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the 11-character IFSC code of your bank branch. Found on your passbook first page. Example: PUNB0123456",
+      "instruction_hi": "Apni bank shaakha ka 11 akshar IFSC code likhein. Passbook ke pehle page par milega. Udaharan: PUNB0123456",
+      "document_needed": "Bank Passbook",
+      "validation": "11 characters"
+    },
+    {
+      "field_id": 11,
+      "field_name": "Land Registration Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your land registration or Khasra number from your land records (Khatauni). This proves you are a landholding farmer eligible for PM-KISAN.",
+      "instruction_hi": "Apne bhumi records (Khatauni) se apna bhumi panjikaran ya khasra number likhein. Isse sabit hota hai ki aap bhumi-dharak kisan hain aur PM-KISAN ke liye paatra hain.",
+      "document_needed": "Khasra / Khatauni (Land Records)",
+      "validation": "Alphanumeric"
+    }
+  ]
+}

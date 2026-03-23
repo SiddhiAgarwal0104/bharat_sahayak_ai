@@ -1,0 +1,79 @@
+{
+  "scheme_name": "Sub-Mission on Agricultural Mechanization (SMAM)",
+  "form_url": "https://agrimachinery.nic.in/",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Farmer Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name as on Aadhaar. SMAM provides subsidy on agricultural machinery and equipment. SC/ST farmers and women get higher subsidy (up to 50%).",
+      "instruction_hi": "Aadhaar ke anusar poora naam likhein. SMAM krishi yantra aur upkaran par subsidy deti hai. SC/ST kisaan aur mahilaon ko zyada subsidy milti hai (50% tak).",
+      "document_needed": "Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Category",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.caste",
+      "instruction_en": "Select your category — SC, ST, Small/Marginal farmer, or Other. Subsidies under SMAM vary by category: SC/ST/women get up to 50%, others get 40-50%.",
+      "instruction_hi": "Apni shrenee chunein — SC, ST, Laghu/Seemant kisan, ya Anya. SMAM ke tahat subsidy shrenee anusar alag hai: SC/ST/mahilaon ko 50% tak, anyon ko 40-50% tak.",
+      "document_needed": "Caste Certificate",
+      "validation": "Select from list"
+    },
+    {
+      "field_id": 2,
+      "field_name": "Equipment Type",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Select the agricultural equipment you want to purchase — tractor, power tiller, harvester, sprayer, seed drill, etc. Subsidy amount depends on equipment type.",
+      "instruction_hi": "Khareedna chahte yantra chunein — tractor, power tiller, harvester, sprayer, seed drill, aadi. Subsidy rashi yantra ke prakar par nirbhar karti hai.",
+      "document_needed": "Equipment Quotation",
+      "validation": "Select from list"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Land Holding",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter total land holding in hectares. Equipment subsidy eligibility and amount may vary based on land holding size.",
+      "instruction_hi": "Kul bhoomi dhaaraata hectare mein likhein. Yantra subsidy paatrata aur rashi bhoomi dhaaraata ke aakar par nirbhar ho sakti hai.",
+      "document_needed": "Land Records",
+      "validation": "Decimal in hectares"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter bank account for subsidy disbursement after equipment purchase verification.",
+      "instruction_hi": "Yantra khareed verification ke baad subsidy vitaran ke liye bank khata likhein.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 5,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter 12-digit Aadhaar for KYC and subsidy transfer.",
+      "instruction_hi": "KYC aur subsidy transfer ke liye 12 ank ka Aadhaar likhein.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    }
+  ],
+  "scheme_id": "69bea9dd61b3a52f7a823b91"
+}

@@ -1,0 +1,79 @@
+{
+  "scheme_name": "Pradhan Mantri Krishi Sinchayee Yojana (PMKSY)",
+  "form_url": "https://pmksy.gov.in/",
+  "fields": [
+    {
+      "field_id": 0,
+      "field_name": "Farmer Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name as on Aadhaar. PMKSY aims to provide water to every field (Har Khet Ko Pani) and improve water use efficiency (More Crop Per Drop).",
+      "instruction_hi": "Aadhaar ke anusar poora naam likhein. PMKSY ka lakshya har khet ko paani dena (Har Khet Ko Pani) aur paani upyog dakshata sudharna (More Crop Per Drop) hai.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Letters and spaces only"
+    },
+    {
+      "field_id": 1,
+      "field_name": "Land Holding Area",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your total land holding in hectares. PMKSY provides subsidy on micro-irrigation systems (drip and sprinkler). Small farmers get higher subsidy.",
+      "instruction_hi": "Apni kul bhumi dhaaraata hectare mein likhein. PMKSY micro-irrigation systems (drip aur sprinkler) par subsidy deti hai. Chhote kisaanon ko zyada subsidy milti hai.",
+      "document_needed": "Land Records",
+      "validation": "Decimal in hectares"
+    },
+    {
+      "field_id": 2,
+      "field_name": "Irrigation Type",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Select the irrigation system you want to install — Drip Irrigation or Sprinkler Irrigation. Drip is better for row crops, sprinkler for field crops.",
+      "instruction_hi": "Jo irrigation system lagana chahte hain woh chunein — Drip Irrigation ya Sprinkler Irrigation. Drip row fasalon ke liye behtar hai, sprinkler field fasalon ke liye.",
+      "document_needed": null,
+      "validation": "Select: Drip / Sprinkler"
+    },
+    {
+      "field_id": 3,
+      "field_name": "Khasra Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter the Khasra/Survey number of the field where irrigation is to be installed. The subsidy is linked to specific land parcels.",
+      "instruction_hi": "Us khet ka Khasra/Survey number likhein jahan irrigation lagani hai. Subsidy specific bhoomi parcel se judi hoti hai.",
+      "document_needed": "Khasra/Land Records",
+      "validation": "Alphanumeric"
+    },
+    {
+      "field_id": 4,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter bank account number for subsidy transfer. PMKSY subsidy is transferred directly to farmer's account after installation verification.",
+      "instruction_hi": "Subsidy transfer ke liye bank khata number likhein. PMKSY subsidy installation verification ke baad seedhe kisan ke khate mein transfer hoti hai.",
+      "document_needed": "Bank Passbook",
+      "validation": "Numbers only"
+    },
+    {
+      "field_id": 5,
+      "field_name": "Aadhaar Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter 12-digit Aadhaar for identity verification and subsidy disbursement.",
+      "instruction_hi": "Pahchaan verification aur subsidy vitaran ke liye 12 ank ka Aadhaar likhein.",
+      "document_needed": "Aadhaar Card",
+      "validation": "Exactly 12 digits"
+    }
+  ],
+  "scheme_id": "69bea9dd61b3a52f7a823b8f"
+}
