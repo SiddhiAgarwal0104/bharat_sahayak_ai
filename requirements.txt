@@ -4,6 +4,9 @@ uvicorn[standard]==0.29.0
 fastapi-cli==0.0.24
 python-multipart==0.0.9
 
+pip install gTTS
+# Add to requirements.txt: gTTS==2.5.1
+
 # ── Data Validation ───────────────────────────────────────────────
 pydantic==2.6.4
 pydantic-settings==2.2.1

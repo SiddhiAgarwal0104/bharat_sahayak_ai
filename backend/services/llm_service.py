@@ -3,7 +3,7 @@ from backend.config import settings
 
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
-model = genai.GenerativeModel('gemini-2.0-flash')
+model = genai.GenerativeModel('gemini-2.5-flash-preview-04-17')
 
 # ADD at the top of llm_service.py
 from gtts import gTTS

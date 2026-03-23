@@ -7,6 +7,7 @@ token      = st.session_state.get("token", "")
 headers    = {"Authorization": f"Bearer {token}"}
 apply_scheme = st.session_state.get("apply_scheme") or {}
 scheme_id    = st.session_state.get("apply_scheme_id") or str(apply_scheme.get("id", ""))
+st.caption("Debug scheme_id: " + str(scheme_id))
 scheme_url   = st.session_state.get("apply_scheme_url") or apply_scheme.get("form_url", "")
 if not scheme_id:
     st.error("No scheme selected. Go back and click Apply Now.")
