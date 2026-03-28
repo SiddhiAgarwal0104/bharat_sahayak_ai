@@ -1,5 +1,6 @@
 # backend/routers/auth_router.py
 from datetime import datetime, timedelta
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -38,6 +39,18 @@ class TokenResponse(BaseModel):
     token_type:   str = "bearer"
     user_id:      str
     name:         str
+
+
+class UpdateProfileRequest(BaseModel):
+    name: Optional[str] = None
+    age: Optional[int] = None
+    location: Optional[str] = None
+    area: Optional[str] = None
+    caste: Optional[str] = None
+    annual_income: Optional[float] = None
+    gender: Optional[str] = None
+    pwd_status: Optional[bool] = None
+    language_pref: Optional[str] = None
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
@@ -119,6 +132,44 @@ async def login(p: LoginRequest):
 # ── GET /auth/me ───────────────────────────────────────────────────────────────
 @router.get("/me")
 async def me(current_user: User = Depends(get_current_user)):
+    return {
+        "id":            str(current_user.id),
+        "name":          current_user.name,
+        "email":         current_user.email,
+        "age":           current_user.age,
+        "caste":         current_user.caste,
+        "annual_income": current_user.annual_income,
+        "gender":        current_user.gender,
+        "pwd_status":    current_user.pwd_status,
+        "language_pref": current_user.language_pref,
+        "location":      current_user.location,
+        "area":          current_user.area,
+    }
+
+
+@router.put("/me")
+async def update_me(payload: UpdateProfileRequest, current_user: User = Depends(get_current_user)):
+    updates = payload.model_dump(exclude_unset=True)
+    if not updates:
+        return {
+            "id":            str(current_user.id),
+            "name":          current_user.name,
+            "email":         current_user.email,
+            "age":           current_user.age,
+            "caste":         current_user.caste,
+            "annual_income": current_user.annual_income,
+            "gender":        current_user.gender,
+            "pwd_status":    current_user.pwd_status,
+            "language_pref": current_user.language_pref,
+            "location":      current_user.location,
+            "area":          current_user.area,
+        }
+
+    for key, value in updates.items():
+        setattr(current_user, key, value)
+
+    await current_user.save()
+
     return {
         "id":            str(current_user.id),
         "name":          current_user.name,

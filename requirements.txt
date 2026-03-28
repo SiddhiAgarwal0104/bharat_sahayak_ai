@@ -4,7 +4,7 @@ uvicorn[standard]==0.29.0
 fastapi-cli==0.0.24
 python-multipart==0.0.9
 
-pip install gTTS
+gTTS
 # Add to requirements.txt: gTTS==2.5.1
 
 # ── Data Validation ───────────────────────────────────────────────
@@ -38,13 +38,9 @@ cloudinary==1.40.0
 
 # ── Member 1 — STT + Voice ────────────────────────────────────────
 openai-whisper
-audio-recorder-streamlit==0.0.10
 
 # ── Member 4 — LLM ───────────────────────────────────────────────
 google-generativeai==0.6.0
-
-# ── Frontend ──────────────────────────────────────────────────────
-streamlit==1.35.0
 
 # ── HTTP ──────────────────────────────────────────────────────────
 requests==2.32.5
