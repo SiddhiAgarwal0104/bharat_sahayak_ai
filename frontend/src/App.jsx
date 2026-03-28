@@ -4,13 +4,14 @@ import { AuthProvider } from "./context/AuthContext"
 import ProtectedRoute from "./components/layout/ProtectedRoute"
 import Navbar from "./components/layout/Navbar"
 
-import Landing      from "./pages/Landing"
-import Login        from "./pages/Login"
-import Register     from "./pages/Register"
-import Dashboard    from "./pages/Dashboard"
-import Search       from "./pages/Search"
-import SchemeDetail from "./pages/SchemeDetail"
-import Profile      from "./pages/Profile"
+import Landing       from "./pages/Landing"
+import Login         from "./pages/Login"
+import Register      from "./pages/Register"
+import Dashboard     from "./pages/Dashboard"
+import SearchResults from "./pages/SearchResults"   // ← styled search page
+import SchemeDetail  from "./pages/SchemeDetail"
+import Profile       from "./pages/Profile"
+import FormPage      from "./pages/FormPage"
 
 export default function App() {
   return (
@@ -27,14 +28,20 @@ export default function App() {
               <Route path="/dashboard" element={
                 <ProtectedRoute><Dashboard /></ProtectedRoute>
               }/>
+
+              {/* /search now uses the fully styled SearchResults page */}
               <Route path="/search" element={
-                <ProtectedRoute><Search /></ProtectedRoute>
+                <ProtectedRoute><SearchResults /></ProtectedRoute>
               }/>
+
               <Route path="/scheme/:id" element={
                 <ProtectedRoute><SchemeDetail /></ProtectedRoute>
               }/>
               <Route path="/profile" element={
                 <ProtectedRoute><Profile /></ProtectedRoute>
+              }/>
+              <Route path="/scheme/:schemeId/form" element={
+                <ProtectedRoute><FormPage /></ProtectedRoute>
               }/>
 
               <Route path="*" element={<Navigate to="/" replace />} />

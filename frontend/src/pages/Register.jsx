@@ -27,6 +27,43 @@ function getApiErrorMessage(err, fallback) {
   return fallback
 }
 
+// ── Moved OUTSIDE Register to prevent remount on every keystroke ──────────────
+
+function InputField({ label, name, type = "text", placeholder = "", value, onChange }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="block text-sm font-bold text-green-900 ml-1">{label}</label>
+      <input
+        name={name}
+        type={type}
+        required
+        value={value}
+        onChange={onChange}
+        className="w-full px-4 py-3 bg-white border-2 border-green-100 rounded-2xl text-green-950 placeholder-green-800/40 focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-500/20 transition-all font-medium shadow-sm"
+        placeholder={placeholder}
+      />
+    </div>
+  )
+}
+
+function SelectField({ label, name, options, value, onChange }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="block text-sm font-bold text-green-900 ml-1">{label}</label>
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        className="w-full px-4 py-3 bg-white border-2 border-green-100 rounded-2xl text-green-950 focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-500/20 transition-all font-medium shadow-sm"
+      >
+        {options.map(o => <option key={o}>{o}</option>)}
+      </select>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function Register() {
   const { login } = useAuth()
   const navigate  = useNavigate()
@@ -38,7 +75,7 @@ export default function Register() {
     pwd_status:"No", language_pref:"Hindi", email:"", password:"",
   })
 
-  const set = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+  const set = (e) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -61,41 +98,18 @@ export default function Register() {
     } finally { setLoading(false) }
   }
 
-  const InputField = ({ label, name, type="text", placeholder="" }) => (
-    <div className="space-y-1.5">
-      <label className="block text-sm font-bold text-green-900 ml-1">{label}</label>
-      <input 
-        name={name} type={type} required value={form[name]} onChange={set} 
-        className="w-full px-4 py-3 bg-white border-2 border-green-100 rounded-2xl text-green-950 placeholder-green-800/40 focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-500/20 transition-all font-medium shadow-sm" 
-        placeholder={placeholder} 
-      />
-    </div>
-  )
-
-  const SelectField = ({ label, name, options }) => (
-    <div className="space-y-1.5">
-      <label className="block text-sm font-bold text-green-900 ml-1">{label}</label>
-      <select 
-        name={name} value={form[name]} onChange={set} 
-        className="w-full px-4 py-3 bg-white border-2 border-green-100 rounded-2xl text-green-950 focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-500/20 transition-all font-medium shadow-sm"
-      >
-        {options.map(o => <option key={o}>{o}</option>)}
-      </select>
-    </div>
-  )
-
   return (
     <div className="min-h-screen bg-[#f0fdf4] font-sans relative overflow-hidden flex flex-col pt-20 pb-16">
-      
+
       {/* Background Ornaments */}
       <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-emerald-200/40 rounded-full blur-[120px] pointer-events-none z-0"></div>
       <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-green-300/30 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="w-full max-w-2xl">
-          
+
           <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(22,163,74,0.2)] border border-white p-6 md:p-10">
-            
+
             <div className="text-center mb-8">
               <Link to="/" className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-green-500 to-green-700 shadow-lg mb-6 transform hover:scale-105 transition-transform">
                 <UserPlus className="h-8 w-8 text-white" />
@@ -106,17 +120,17 @@ export default function Register() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <InputField label="Full Name" name="name" placeholder="e.g. Ramesh Kumar" />
-                <InputField label="Email Address" name="email" type="email" placeholder="you@example.com" />
-                <InputField label="Password" name="password" type="password" placeholder="Min 8 characters" />
-                <InputField label="Age" name="age" type="number" placeholder="e.g. 25" />
-                <SelectField label="State" name="location" options={STATES} />
-                <InputField label="District / Area" name="area" placeholder="e.g. Lucknow" />
-                <SelectField label="Gender" name="gender" options={["Male", "Female", "Other"]} />
-                <SelectField label="Caste Category" name="caste" options={["General", "OBC", "SC", "ST"]} />
-                <InputField label="Annual Income (₹)" name="annual_income" type="number" placeholder="120000" />
-                <SelectField label="Person with Disability?" name="pwd_status" options={["No", "Yes"]} />
-                <SelectField label="Preferred Language" name="language_pref" options={Object.keys(LANG_MAP)} />
+                <InputField label="Full Name"         name="name"          value={form.name}          onChange={set} placeholder="e.g. Ramesh Kumar" />
+                <InputField label="Email Address"     name="email"         value={form.email}         onChange={set} type="email"   placeholder="you@example.com" />
+                <InputField label="Password"          name="password"      value={form.password}      onChange={set} type="password" placeholder="Min 8 characters" />
+                <InputField label="Age"               name="age"           value={form.age}           onChange={set} type="number"  placeholder="e.g. 25" />
+                <SelectField label="State"            name="location"      value={form.location}      onChange={set} options={STATES} />
+                <InputField label="District / Area"   name="area"          value={form.area}          onChange={set} placeholder="e.g. Lucknow" />
+                <SelectField label="Gender"           name="gender"        value={form.gender}        onChange={set} options={["Male", "Female", "Other"]} />
+                <SelectField label="Caste Category"   name="caste"         value={form.caste}         onChange={set} options={["General", "OBC", "SC", "ST"]} />
+                <InputField label="Annual Income (₹)" name="annual_income" value={form.annual_income} onChange={set} type="number"  placeholder="120000" />
+                <SelectField label="Person with Disability?" name="pwd_status"    value={form.pwd_status}    onChange={set} options={["No", "Yes"]} />
+                <SelectField label="Preferred Language"      name="language_pref" value={form.language_pref} onChange={set} options={Object.keys(LANG_MAP)} />
               </div>
 
               {error && (
@@ -126,9 +140,9 @@ export default function Register() {
                 </div>
               )}
 
-              <button 
-                type="submit" 
-                disabled={loading} 
+              <button
+                type="submit"
+                disabled={loading}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-[0_8px_20px_rgba(22,163,74,0.3)] hover:shadow-[0_12px_25px_rgba(22,163,74,0.4)] hover:-translate-y-0.5 disabled:opacity-70 mt-4"
               >
                 {loading ? (

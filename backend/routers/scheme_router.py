@@ -2,6 +2,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
+from bson import ObjectId
+from bson.errors import InvalidId
 from backend.agents.search_agent import SearchAgent
 from backend.agents.profile_agent import ProfileAgent
 from backend.db.database import get_schemes_collection
@@ -88,12 +90,24 @@ def get_all_schemes():
 @router.get("/{scheme_id}")
 def get_scheme(scheme_id: str):
     col = get_schemes_collection()
+    doc = None
+
+    # 1. Try MongoDB ObjectId first (what the frontend sends)
     try:
-        doc = col.find_one({"embedding_id": int(scheme_id)})
-    except ValueError:
-        doc = None
+        doc = col.find_one({"_id": ObjectId(scheme_id)})
+    except (InvalidId, Exception):
+        pass
+
+    # 2. Fallback: try embedding_id (integer)
+    if doc is None:
+        try:
+            doc = col.find_one({"embedding_id": int(scheme_id)})
+        except (ValueError, Exception):
+            pass
+
     if not doc:
         raise HTTPException(status_code=404, detail=f"Scheme {scheme_id} not found.")
+
     return format_scheme(doc)
 
 

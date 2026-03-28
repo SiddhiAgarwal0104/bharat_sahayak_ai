@@ -1,185 +1,272 @@
 // src/pages/SchemeDetail.jsx
+// Explain scheme page — matches Dashboard.jsx green design system exactly
+
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { getScheme } from "../api/api"
 import { useAuth } from "../context/AuthContext"
 import { tr } from "../utils/i18n"
+import {
+  ArrowLeft, ShieldCheck, Sparkles, CheckCircle2, XCircle,
+  FileText, ExternalLink, Loader2, AlertCircle,
+  IndianRupee, Users, Calendar, BookOpen, ArrowRight, Star
+} from "lucide-react"
 
-const CATEGORY_COLORS = {
-  education:   "bg-blue-100 text-blue-800",
-  agriculture: "bg-green-100 text-green-800",
-  health:      "bg-red-100 text-red-800",
-  pension:     "bg-amber-100 text-amber-800",
-  other:       "bg-gray-100 text-gray-700",
+const CATEGORY_META = {
+  health:      { bg: "bg-red-100",   text: "text-red-800",   dot: "bg-red-500",   border: "border-red-200"   },
+  agriculture: { bg: "bg-green-100", text: "text-green-800", dot: "bg-green-500", border: "border-green-200" },
+  pension:     { bg: "bg-amber-100", text: "text-amber-800", dot: "bg-amber-500", border: "border-amber-200" },
+  women:       { bg: "bg-pink-100",  text: "text-pink-800",  dot: "bg-pink-500",  border: "border-pink-200"  },
+  education:   { bg: "bg-blue-100",  text: "text-blue-800",  dot: "bg-blue-500",  border: "border-blue-200"  },
+  other:       { bg: "bg-gray-100",  text: "text-gray-700",  dot: "bg-gray-400",  border: "border-gray-200"  },
 }
 
-function EligibilityCheck({ label, pass }) {
-  return (
-    <div className="flex items-center gap-3 py-2 border-b border-neutral-100 last:border-0">
-      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0
-                       ${pass ? "bg-success/20" : "bg-danger/20"}`}>
-        <span className={`text-sm font-bold ${pass ? "text-success" : "text-danger"}`}>
-          {pass ? "✓" : "✗"}
-        </span>
-      </div>
-      <span className={`text-sm ${pass ? "text-neutral-900" : "text-neutral-500 line-through"}`}>
-        {label}
-      </span>
-    </div>
-  )
+const getSchemeImage = (name = "", category = "") => {
+  const t = (name + " " + category).toLowerCase()
+  if (t.includes("farm") || t.includes("kisan") || t.includes("krishi"))
+    return "https://images.pexels.com/photos/10327341/pexels-photo-10327341.jpeg?auto=compress&cs=tinysrgb&w=800"
+  if (t.includes("health") || t.includes("ayushman") || t.includes("medical"))
+    return "https://images.pexels.com/photos/4386466/pexels-photo-4386466.jpeg?auto=compress&cs=tinysrgb&w=800"
+  if (t.includes("pension") || t.includes("atal") || t.includes("nps"))
+    return "https://images.pexels.com/photos/3823488/pexels-photo-3823488.jpeg?auto=compress&cs=tinysrgb&w=800"
+  if (t.includes("women") || t.includes("mahila") || t.includes("beti"))
+    return "https://images.pexels.com/photos/3768911/pexels-photo-3768911.jpeg?auto=compress&cs=tinysrgb&w=800"
+  return "https://images.pexels.com/photos/1598075/pexels-photo-1598075.jpeg?auto=compress&cs=tinysrgb&w=800"
 }
 
 function checkEligibility(user, criteria) {
   if (!criteria || !user) return []
   const checks = []
-
   if (criteria.min_age)
-    checks.push({ label: `Age ${criteria.min_age}+`, pass: user.age >= criteria.min_age })
-
+    checks.push({ label: `Age ${criteria.min_age}+`, pass: Number(user.age) >= criteria.min_age })
   if (criteria.max_age)
-    checks.push({ label: `Age below ${criteria.max_age}`, pass: user.age <= criteria.max_age })
-
+    checks.push({ label: `Age below ${criteria.max_age}`, pass: Number(user.age) <= criteria.max_age })
   if (criteria.max_income)
-    checks.push({
-      label: `Annual income ≤ ₹${criteria.max_income.toLocaleString()}`,
-      pass: user.annual_income <= criteria.max_income,
-    })
-
+    checks.push({ label: `Annual income ≤ ₹${criteria.max_income.toLocaleString()}`, pass: Number(user.annual_income) <= criteria.max_income })
   if (criteria.gender)
-    checks.push({
-      label: criteria.gender === "F" ? "For women only" : "For men only",
-      pass: user.gender === criteria.gender,
-    })
-
+    checks.push({ label: criteria.gender === "F" ? "For women only" : "For men only", pass: user.gender === criteria.gender })
   if (criteria.caste && criteria.caste.length > 0)
-    checks.push({
-      label: `Caste: ${criteria.caste.join(", ")}`,
-      pass: criteria.caste.includes(user.caste),
-    })
-
+    checks.push({ label: `Caste: ${criteria.caste.join(", ")}`, pass: criteria.caste.includes(user.caste) })
   if (criteria.pwd_only)
-    checks.push({
-      label: "Person with disability",
-      pass: user.pwd_status === true,
-    })
-
+    checks.push({ label: "Person with disability", pass: Boolean(user.pwd_status) })
   return checks
 }
 
 export default function SchemeDetail() {
-  const { id }      = useParams()
-  const { user }    = useAuth()
-  const lang        = user?.language_pref || "en"
-  const navigate    = useNavigate()
+  const { id }   = useParams()
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const lang     = user?.language_pref || "en"
+
   const [scheme,  setScheme]  = useState(null)
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(null)
 
   useEffect(() => {
     getScheme(id)
-      .then((r) => setScheme(r.data))
-      .catch(() => setError(tr(lang, "scheme.loadError")))
+      .then(r => setScheme(r.data))
+      .catch(() => setError("Could not load scheme. Please try again."))
       .finally(() => setLoading(false))
-  }, [id, lang])
+  }, [id])
 
   if (loading) return (
-    <div className="flex justify-center py-20">
-      <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"/>
+    <div className="min-h-screen bg-[#f0fdf4] pt-[100px] flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <Loader2 className="h-12 w-12 text-green-600 animate-spin" />
+        <p className="text-green-800 font-semibold">Loading scheme details...</p>
+      </div>
     </div>
   )
 
-  if (error) return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <div className="bg-danger/10 text-danger rounded-xl p-4 text-center">{error}</div>
-      <button onClick={() => navigate(-1)} className="btn-secondary w-full mt-4">{tr(lang, "scheme.goBack")}</button>
+  if (error || !scheme) return (
+    <div className="min-h-screen bg-[#f0fdf4] pt-[100px] px-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-red-50 border border-red-200 rounded-3xl p-10 text-center">
+          <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+          <p className="text-red-600 font-semibold mb-4">{error || "Scheme not found"}</p>
+          <button onClick={() => navigate(-1)} className="px-6 py-3 bg-white border-2 border-red-200 text-red-700 rounded-xl font-bold hover:bg-red-50 transition-colors">
+            ← Go Back
+          </button>
+        </div>
+      </div>
     </div>
   )
 
-  if (!scheme) return null
-
-  const eligibilityChecks = checkEligibility(user, scheme.eligibility_criteria)
-  const allPass = eligibilityChecks.length > 0 && eligibilityChecks.every((c) => c.pass)
-  const colorClass = CATEGORY_COLORS[scheme.category] || CATEGORY_COLORS.other
+  const cat     = (scheme.category || "other").toLowerCase()
+  const meta    = CATEGORY_META[cat] || CATEGORY_META.other
+  const checks  = checkEligibility(user, scheme.eligibility_criteria)
+  const allPass = checks.length > 0 && checks.every(c => c.pass)
+  const docs    = scheme.docs_needed
+    ? scheme.docs_needed.split(/[,\n]/).map(d => d.trim()).filter(Boolean)
+    : []
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+    <div className="bg-[#f0fdf4] min-h-screen pb-20 pt-[100px] relative">
 
-      {/* Back button */}
-      <button onClick={() => navigate(-1)}
-              className="flex items-center gap-2 text-primary font-medium hover:underline">
-        ← {tr(lang, "scheme.back")}
-      </button>
+      {/* Background */}
+      <div className="absolute top-0 left-0 w-full h-[400px] bg-gradient-to-b from-green-100 to-[#f0fdf4] pointer-events-none z-0" />
+      <div className="absolute top-20 right-10 w-[400px] h-[400px] bg-emerald-300/20 rounded-full blur-[120px] pointer-events-none z-0" />
 
-      {/* Header card */}
-      <div className="card">
-        <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
-          <span className={`badge text-xs ${colorClass}`}>{scheme.category}</span>
-          {allPass && (
-            <span className="badge bg-success/20 text-success text-xs">
-              ✓ {tr(lang, "scheme.eligible")}
-            </span>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10 space-y-8">
+
+        {/* Back */}
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 text-green-700 font-bold hover:text-green-900 transition-colors">
+          <ArrowLeft className="h-5 w-5" /> Back
+        </button>
+
+        {/* ── Hero Card ─────────────────────────────────────────────────── */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_-15px_rgba(22,163,74,0.15)] border border-white">
+
+          {/* Hero image */}
+          <div className="relative h-[260px] overflow-hidden">
+            <img src={getSchemeImage(scheme.name, scheme.category)} alt={scheme.name} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+            {/* Badges on image */}
+            <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
+              <div>
+                <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-widest bg-white/95 backdrop-blur-md ${meta.text} mb-3`}>
+                  <span className={`h-2 w-2 rounded-full ${meta.dot}`} />
+                  {scheme.category}
+                </span>
+                <h1 className="text-2xl md:text-3xl font-black text-white leading-tight max-w-xl drop-shadow-lg">
+                  {scheme.name}
+                </h1>
+              </div>
+              {allPass && (
+                <div className="flex-shrink-0 bg-green-500 text-white px-4 py-2 rounded-2xl font-black text-sm flex items-center gap-2 shadow-lg">
+                  <CheckCircle2 className="h-4 w-4" /> Eligible
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="p-8 md:p-10">
+            <p className="text-gray-700 leading-relaxed text-lg mb-8">
+              {scheme.description}
+            </p>
+
+            {/* Two action buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                onClick={() => navigate(`/scheme/${scheme.id}/form`)}
+                className="flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white rounded-2xl font-bold text-lg transition-all shadow-[0_8px_20px_rgba(22,163,74,0.3)] hover:shadow-[0_12px_25px_rgba(22,163,74,0.4)] hover:-translate-y-0.5 active:scale-95"
+              >
+                <FileText className="h-5 w-5" />
+                Start Guided Application
+                <span className="bg-white/20 p-1.5 rounded-full">
+                  <ArrowRight className="h-4 w-4" />
+                </span>
+              </button>
+              {scheme.form_url && (
+                <a
+                  href={scheme.form_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-6 py-4 bg-white border-2 border-green-200 text-green-700 rounded-2xl font-bold hover:bg-green-50 hover:-translate-y-0.5 transition-all"
+                >
+                  <ExternalLink className="h-5 w-5" />
+                  Official Portal
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Info grid ─────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          {/* Benefits */}
+          {scheme.benefits && (
+            <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 shadow-[0_10px_30px_rgba(22,163,74,0.08)] border border-white">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-green-100 to-emerald-50 border border-green-200 flex items-center justify-center">
+                  <IndianRupee className="h-6 w-6 text-green-600" />
+                </div>
+                <h2 className="text-xl font-black text-green-950">Benefits</h2>
+              </div>
+              <div className="bg-green-50 border border-green-100 rounded-2xl p-4">
+                <p className="text-green-900 font-semibold leading-relaxed">{scheme.benefits}</p>
+              </div>
+            </div>
           )}
-        </div>
-        <h1 className="text-2xl font-bold text-neutral-900 mb-3">{scheme.name}</h1>
-        <p className="text-neutral-700 leading-relaxed">{scheme.description}</p>
-      </div>
 
-      {/* Benefit amount */}
-      {scheme.benefits && (
-        <div className="card border-l-4 border-success">
-          <p className="label text-success">{tr(lang, "scheme.benefit")}</p>
-          <p className="text-xl font-bold text-success mt-1">{scheme.benefits}</p>
-        </div>
-      )}
+          {/* Eligibility */}
+          {checks.length > 0 && (
+            <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 shadow-[0_10px_30px_rgba(22,163,74,0.08)] border border-white">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-green-100 to-emerald-50 border border-green-200 flex items-center justify-center">
+                  <ShieldCheck className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-green-950">Eligibility</h2>
+                  <p className="text-sm text-green-700 font-medium">
+                    {allPass ? "✓ You qualify for this scheme" : "Some criteria not met"}
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {checks.map((c, i) => (
+                  <div key={i} className={`flex items-center gap-3 p-3 rounded-xl border ${c.pass ? "bg-green-50 border-green-100" : "bg-red-50 border-red-100"}`}>
+                    {c.pass
+                      ? <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                      : <XCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
+                    }
+                    <span className={`text-sm font-semibold ${c.pass ? "text-green-900" : "text-red-700 line-through"}`}>
+                      {c.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
-      {/* Eligibility checklist */}
-      {eligibilityChecks.length > 0 && (
-        <div className="card">
-          <h2 className="text-lg font-semibold mb-1">{tr(lang, "scheme.eligibilityCheck")}</h2>
-          <p className="text-sm text-neutral-700 mb-4">
-            {allPass ? tr(lang, "scheme.eligibilityPass") : tr(lang, "scheme.eligibilityFail")}
-          </p>
-          {eligibilityChecks.map((c, i) => (
-            <EligibilityCheck key={i} label={c.label} pass={c.pass} />
-          ))}
-        </div>
-      )}
-
-      {/* Documents needed */}
-      {scheme.docs_needed && (
-        <div className="card">
-          <h2 className="text-lg font-semibold mb-3">{tr(lang, "scheme.docs")}</h2>
-          <ul className="space-y-2">
-            {scheme.docs_needed.split(",").map((doc, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-neutral-700">
-                <span className="text-primary mt-0.5 flex-shrink-0">•</span>
-                {doc.trim()}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Apply section */}
-      <div className="card">
-        <h2 className="text-lg font-semibold mb-2">{tr(lang, "scheme.applyTitle")}</h2>
-        <p className="text-sm text-neutral-700 mb-4">
-          {tr(lang, "scheme.applyText")}
-        </p>
-        <div className="flex gap-3 flex-wrap">
-          {scheme.form_url ? (
-            <a href={scheme.form_url} target="_blank" rel="noreferrer"
-               className="btn-primary flex-1 text-center">
-              {tr(lang, "scheme.applyBtn")}
-            </a>
-          ) : (
-            <div className="bg-neutral-100 text-neutral-700 rounded-xl p-4 text-sm w-full text-center">
-              {tr(lang, "scheme.noLink")}
+          {/* Documents */}
+          {docs.length > 0 && (
+            <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 shadow-[0_10px_30px_rgba(22,163,74,0.08)] border border-white md:col-span-2">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-100 to-yellow-50 border border-amber-200 flex items-center justify-center">
+                  <BookOpen className="h-6 w-6 text-amber-600" />
+                </div>
+                <h2 className="text-xl font-black text-green-950">Documents Required</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {docs.map((doc, i) => (
+                  <div key={i} className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-100 rounded-2xl">
+                    <div className="h-8 w-8 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                      <FileText className="h-4 w-4 text-amber-700" />
+                    </div>
+                    <span className="text-sm font-semibold text-amber-900">{doc}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
-      </div>
 
+        {/* ── Apply CTA ─────────────────────────────────────────────────── */}
+        <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-[2.5rem] p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_20px_60px_-15px_rgba(22,163,74,0.4)]">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="h-5 w-5 text-white/80" />
+              <span className="text-white/80 text-sm font-bold uppercase tracking-widest">AI-Guided Application</span>
+            </div>
+            <h3 className="text-2xl md:text-3xl font-black text-white mb-2">Ready to apply?</h3>
+            <p className="text-white/80 font-medium">Our AI will guide you field by field in your language.</p>
+          </div>
+          <button
+            onClick={() => navigate(`/scheme/${scheme.id}/form`)}
+            className="flex-shrink-0 flex items-center gap-3 px-8 py-4 bg-white text-green-700 rounded-2xl font-black text-lg hover:bg-green-50 hover:-translate-y-0.5 active:scale-95 transition-all shadow-lg"
+          >
+            Start Now
+            <span className="bg-green-100 p-1.5 rounded-full">
+              <ArrowRight className="h-5 w-5" />
+            </span>
+          </button>
+        </div>
+
+      </div>
     </div>
   )
 }
