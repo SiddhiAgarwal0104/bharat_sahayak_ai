@@ -1,7 +1,7 @@
 // src/api/api.js
 import axios from "axios"
 
-const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
+const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000"
 
 // Axios instance — automatically adds JWT to every request
 const api = axios.create({ baseURL: BASE_URL })
@@ -36,6 +36,10 @@ export const queryAudio = (audioBlob, languageHint) => {
   return api.post("/stt/transcribe", form, {
     headers: { "Content-Type": "multipart/form-data" },
   })
+}
+
+export const sendChatMessage = (message) => {
+  return api.post("/chatbot/chat", { message })
 }
 
 export default api

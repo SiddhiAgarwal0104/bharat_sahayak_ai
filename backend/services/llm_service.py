@@ -1,15 +1,9 @@
-import google.generativeai as genai
+import requests
 from backend.config import settings
 
-genai.configure(api_key=settings.GEMINI_API_KEY)
-
-model = genai.GenerativeModel('gemini-2.5-flash')
-
-# ADD at the top of llm_service.py
 from gtts import gTTS
 import io
 
-# ADD this new function
 def text_to_speech(text: str, language: str = 'hi') -> bytes:
     """
     Converts text to speech audio bytes using gTTS.
@@ -33,8 +27,17 @@ LANG_MAP = {
 
 def generate(prompt: str, language: str = 'hi') -> str:
     try:
-        response = model.generate_content(prompt)
-        return response.text
+        # We explicitly use simple REST over HTTPS to bypass the SDK gRPC hanging
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={settings.GEMINI_API_KEY}"
+        payload = {
+            "contents": [{"parts": [{"text": prompt}]}]
+        }
+        res = requests.post(url, json=payload, headers={"Content-Type": "application/json"}, timeout=15)
+        if res.status_code == 200:
+            return res.json()['candidates'][0]['content']['parts'][0]['text']
+        else:
+            print(f"[LLMService] Gemini error ({res.status_code}): {res.text}")
+            return ""
     except Exception as e:
-        print(f'[LLMService] Gemini error: {e}')
+        print(f'[LLMService] Gemini Request Exception: {e}')
         return ''

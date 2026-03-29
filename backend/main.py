@@ -67,6 +67,12 @@ from backend.routers.form_router import router as form_router
 
 app.include_router(form_router, prefix="/form", tags=["Forms"])
 
+try:
+    from backend.routers.chatbot_router import router as chatbot_router
+    app.include_router(chatbot_router)
+except Exception as e:
+    print(f"[main] chatbot_router not loaded: {e}")
+
 # ── Startup / Shutdown ────────────────────────────────────────────────────────
 @app.on_event("startup")
 async def startup():
