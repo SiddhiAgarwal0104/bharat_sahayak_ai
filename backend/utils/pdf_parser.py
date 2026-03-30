@@ -66,23 +66,55 @@ def _read_pdf(pdf_path: str) -> str:
 
 
 def _get_category(filename: str) -> str:
-    """
-    Derive category from filename prefix.
-    e.g. health_ayushman_bharat_guidelines.pdf -> health
-    """
-    name = filename.lower()
-    if name.startswith("health"):
-        return "health"
-    if name.startswith("pension"):
-        return "pension"
-    if name.startswith("agriculture") or name.startswith("agri"):
-        return "agriculture"
-    if name.startswith("women") or name.startswith("woman"):
-        return "women"
-    # fallback: use first word before underscore
-    return name.split("_")[0]
+    name = filename.lower().replace(".pdf", "").replace(" ", "_")
 
+    KEYWORD_MAP = [
+        # Health
+        ("health",          "health"),
+        ("ayushman",        "health"),
+        ("cghs",            "health"),
+        ("central_government_health", "health"),
+        ("bal_swasthya",    "health"),
+        ("janani",          "health"),
+        ("rbsk",            "health"),
+        ("suraksha_bima",   "health"),
+        # Pension
+        ("nps",             "pension"),
+        ("atal",            "pension"),
+        ("epf",             "pension"),
+        ("employee_pension","pension"),
+        ("old_age",         "pension"),
+        ("ups",             "pension"),
+        # Agriculture
+        ("smam",            "agriculture"),
+        ("kisan",           "agriculture"),
+        ("kcc",             "agriculture"),
+        ("pmksy",           "agriculture"),
+        ("pmfby",           "agriculture"),
+        ("krishi",          "agriculture"),
+        # Women
+        ("mahila",          "women"),
+        ("sukanya",         "women"),
+        ("beti",            "women"),
+        ("working_women",   "women"),
+        ("matru",           "women"),
+        ("vandana",         "women"),
+        ("ujjawal",         "women"),
+        ("ujjwala",         "women"),
+        # Education
+        ("central_sector",  "education"),
+        ("scholarship",     "education"),
+        ("vidya",           "education"),
+        # Housing
+        ("awas",            "housing"),
+        ("hostels",         "housing"),
+    ]
 
+    for keyword, category in KEYWORD_MAP:
+        if keyword in name:
+            return category
+
+    return "other"
 def _extract_name(text: str, filename: str) -> str:
     """
     Try to find scheme name from the first few lines of the PDF.

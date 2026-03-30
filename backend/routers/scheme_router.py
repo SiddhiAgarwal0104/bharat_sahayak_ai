@@ -22,6 +22,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from backend.agents.search_agent import SearchAgent
 from backend.agents.explainer_agent import ExplainerAgent
+from backend.agents.profile_agent import ProfileAgent
 from backend.models.scheme import format_scheme
 from backend.db.database import get_schemes_collection
 from backend.config import JWT_SECRET, JWT_ALGORITHM
@@ -69,20 +70,30 @@ def _get_user_obj(credentials: HTTPAuthorizationCredentials = Depends(security))
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
+# NOTE: /recommended and /all MUST be defined BEFORE /{scheme_id}
+# so FastAPI does not swallow them as path parameters.
+
 @router.get("/recommended")
-def get_recommended(user=Depends(_get_user_obj)):
+async def get_recommended(user=Depends(_get_user_obj)):
     """
-    Return top auto-matched schemes for the logged-in user.
-    Used on the home dashboard (page 2).
-    No intent required — uses user's location as query hint.
+    Return top recommended schemes for the logged-in user.
+    Anonymous users receive an empty list.
     """
+    # FIX 1: extract user_id from the user dict (was referencing undefined `user_id`)
+    user_id = user["user_id"]
+    if not user_id:
+        return []   # anonymous — nothing to recommend
+
+    # FIX 2: build intent_obj (was referencing undefined `intent_obj`)
     intent_obj = {
-        "query_text": user["location"] + " government schemes",
-        "language":   user["language_pref"],
+        "query_text": "recommended schemes",
+        "language":   user.get("language_pref", "en"),
         "intent":     "all",
         "slots":      {},
     }
-    results = _search_agent.search(intent_obj, candidate_ids=[])
+
+    eligible_ids = await ProfileAgent().get_eligible_scheme_ids(user_id, intent="all")
+    results = _search_agent.search(intent_obj, candidate_ids=eligible_ids)
     return results
 
 
@@ -122,17 +133,46 @@ def get_all_schemes():
     return [format_scheme(doc) for doc in col.find()]
 
 
+@router.post("/search")
+def search_schemes(body: dict, user=Depends(_get_user_obj)):
+    """
+    Main search endpoint — called by the orchestrator.
+
+    Request body:
+        {
+            "intent_obj":    { "query_text": str, "language": str,
+                               "intent": str, "slots": {} },
+            "candidate_ids": [1, 3, 7, ...]   ← from Member 2's profile agent
+        }
+
+    Returns:
+        List of up to 3 scheme dicts with match_score and is_best_match.
+    """
+    intent_obj    = body.get("intent_obj")
+    candidate_ids = body.get("candidate_ids", [])
+
+    if not intent_obj:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Request body must include 'intent_obj'.",
+        )
+
+    results = _search_agent.search(intent_obj, candidate_ids)
+    return results
+
+
+# ── Routes with path parameters MUST come after all static routes ─────────────
+
 @router.get("/{scheme_id}/translate")
 def translate_scheme(scheme_id: str, lang: str = "hi"):
     """
-    Translate scheme description, benefits, and docs_needed into the
-    requested language using Gemini. Falls back to original English on error.
-
-    Query param:
-        lang: ISO 639-1 code — 'hi' | 'ta' | 'te' | 'bn' | 'mr'
+    Translate scheme fields into the requested language using Gemini.
+    Falls back to original English on any error.
     """
-    if lang == "en":
-        return {"translated": False}
+    # Normalize lang — reject full words like "Hindi" 
+    VALID_LANGS = {"hi", "ta", "te", "bn", "mr"}
+    if lang not in VALID_LANGS:
+        return {"translated": False}   # "en" or anything invalid → no translation needed
 
     col = get_schemes_collection()
 
@@ -148,29 +188,38 @@ def translate_scheme(scheme_id: str, lang: str = "hi"):
     if not doc:
         raise HTTPException(status_code=404, detail="Scheme not found")
 
-    scheme = format_scheme(doc)
+    scheme   = format_scheme(doc)
     lang_name = LANG_MAP.get(lang, "Hindi")
 
     def translate_field(text: str, field_label: str) -> str:
-        if not text:
+        if not text or not text.strip():
             return text
-        prompt = (
-            f"Translate the following government scheme {field_label} into simple {lang_name}. "
-            f"Keep all numbers, rupee amounts, and proper nouns unchanged. "
-            f"Return ONLY the translated text, no explanations.\n\n"
-            f"{text}"
-        )
-        result = generate(prompt, lang)
-        return result.strip() if result else text  # fallback to English on error
+        try:
+            prompt = (
+                f"Translate the following government scheme {field_label} into simple {lang_name}. "
+                f"Keep all numbers, rupee amounts, and proper nouns unchanged. "
+                f"Return ONLY the translated text, no explanations, no markdown.\n\n"
+                f"{text[:800]}"   # cap at 800 chars to keep Gemini fast
+            )
+            result = generate(prompt, lang)
+            return result.strip() if result else text
+        except Exception as e:
+            print(f"[translate_scheme] field '{field_label}' failed: {e}")
+            return text   # fallback to English on any error
+
+    description = translate_field(scheme.get("description", ""), "description")
+    benefits    = translate_field(scheme.get("benefits", ""),    "benefits")
+    docs_needed = translate_field(scheme.get("docs_needed", ""), "documents needed")
+
+    print(f"[translate_scheme] {scheme_id} → {lang} done")
 
     return {
         "translated":  True,
         "language":    lang,
-        "description": translate_field(scheme.get("description", ""),  "description"),
-        "benefits":    translate_field(scheme.get("benefits", ""),     "benefits"),
-        "docs_needed": translate_field(scheme.get("docs_needed", ""),  "documents needed"),
+        "description": description,
+        "benefits":    benefits,
+        "docs_needed": docs_needed,
     }
-
 
 @router.get("/{scheme_id}/voice")
 def get_scheme_voice(scheme_id: str, lang: str = "hi"):
@@ -255,31 +304,3 @@ def get_scheme(scheme_id: str):
         )
 
     return format_scheme(doc)
-
-
-@router.post("/search")
-def search_schemes(body: dict, user=Depends(_get_user_obj)):
-    """
-    Main search endpoint — called by the orchestrator.
-
-    Request body:
-        {
-            "intent_obj":    { "query_text": str, "language": str,
-                               "intent": str, "slots": {} },
-            "candidate_ids": [1, 3, 7, ...]   ← from Member 2's profile agent
-        }
-
-    Returns:
-        List of up to 3 scheme dicts with match_score and is_best_match.
-    """
-    intent_obj    = body.get("intent_obj")
-    candidate_ids = body.get("candidate_ids", [])
-
-    if not intent_obj:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Request body must include 'intent_obj'.",
-        )
-
-    results = _search_agent.search(intent_obj, candidate_ids)
-    return results

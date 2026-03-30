@@ -8,8 +8,8 @@ gTTS
 # Add to requirements.txt: gTTS==2.5.1
 
 # ── Data Validation ───────────────────────────────────────────────
-pydantic==2.6.4
-pydantic-settings==2.2.1
+pydantic>=2.7.0
+pydantic-settings>=2.3.0
 
 # ── Auth + Security ───────────────────────────────────────────────
 python-jose[cryptography]==3.3.0

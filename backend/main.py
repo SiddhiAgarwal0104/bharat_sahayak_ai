@@ -1,7 +1,9 @@
 # backend/main.py
 # Combined: Member 1 (auth, STT) + Member 2 (NLP) + Member 3 (schemes, search)
 # Member 4 will add form_router and orchestrator on top of this
-
+import os
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["OMP_NUM_THREADS"] = "1"
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.config import settings
@@ -59,8 +61,12 @@ except Exception as e:
     print(f"[main] scheme_router not loaded: {e}")
 
 # ── Member 4 routers (added later) ───────────────────────────────────────────
-from backend.routers.form_router import router as form_router
-app.include_router(form_router, prefix="/form", tags=["Forms"])
+# AFTER
+try:
+    from backend.routers.form_router import router as form_router
+    app.include_router(form_router, prefix="/form", tags=["Forms"])
+except Exception as e:
+    print(f"[main] form_router not loaded: {e}")
 
 # ── Chatbot ───────────────────────────────────────────────────────────────────
 try:

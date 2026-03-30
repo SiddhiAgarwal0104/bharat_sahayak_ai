@@ -43,16 +43,17 @@ def get_index() -> faiss.Index:
         return load_index()
     return _index
 
-
 def search(query_vector: np.ndarray, candidate_ids: list, top_k: int = 3) -> list:
-    index         = get_index()
+    index = get_index()
     if index.ntotal == 0:
         return []
 
-    candidate_set = set(candidate_ids)
-    k             = min(index.ntotal, max(top_k * 10, 30))
-    query         = query_vector.reshape(1, -1).astype("float32")
-    scores, ids   = index.search(query, k)
+    # ✅ Cast all candidate_ids to int for comparison with FAISS idx
+    candidate_set = set(int(i) for i in candidate_ids)
+
+    k           = min(index.ntotal, max(top_k * 10, 30))
+    query       = query_vector.reshape(1, -1).astype("float32")
+    scores, ids = index.search(query, k)
 
     results = []
     for score, idx in zip(scores[0], ids[0]):
@@ -63,7 +64,6 @@ def search(query_vector: np.ndarray, candidate_ids: list, top_k: int = 3) -> lis
         if len(results) == top_k:
             break
     return results
-
 
 def reset_index():
     global _index

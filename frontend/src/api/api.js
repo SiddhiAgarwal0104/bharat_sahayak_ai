@@ -1,10 +1,7 @@
-// src/api/api.js
 import axios from "axios"
 
-const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000"
-
-// Axios instance — automatically adds JWT to every request
-const api = axios.create({ baseURL: BASE_URL })
+// No BASE_URL — let Vite proxy handle all routing
+const api = axios.create()
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token")
@@ -25,7 +22,11 @@ export const getScheme      = (id) => api.get(`/schemes/${id}`)
 // ── Query (text or audio) ──────────────────────────────────────────────────────
 export const queryText = (text, language) => {
   console.log(`[API] queryText: "${text.substring(0, 50)}..."`)
-  return api.post("/form/query", { input_type: "text", content: text })
+  return api.post("/query", {        // ✅ was /form/query
+    input_type: "text",
+    content: text,
+    language: language || "en",
+  })
 }
 
 export const queryAudio = (audioBlob, languageHint) => {

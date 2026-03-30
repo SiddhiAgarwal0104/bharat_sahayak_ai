@@ -43,7 +43,7 @@ function useTTS() {
 }
 
 
-const BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
+const BASE = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000"
 
 const API = async (url, opts = {}) => {
   const token = localStorage.getItem("token")

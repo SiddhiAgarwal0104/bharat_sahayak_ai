@@ -7,13 +7,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ── Raw variables ─────────────────────────────────────────────────────────────
-MONGO_URL     = os.getenv("MONGO_URL",    "mongodb://localhost:27017")
+MONGO_URL     = os.getenv("MONGO_URL",    "mongodb://127.0.0.1:27017")
 MONGO_DB      = os.getenv("MONGO_DB",     "sahayak")
 JWT_SECRET    = os.getenv("JWT_SECRET",   "changeme_secret_key")
 JWT_ALGORITHM = "HS256"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 MODEL_PATH    = os.getenv("MODEL_PATH",   "data/model")
-BACKEND_URL   = os.getenv("BACKEND_URL",  "http://localhost:8000")
+BACKEND_URL   = os.getenv("BACKEND_URL",  "http://127.0.0.1:8000")
 HF_TOKEN      = os.getenv("HF_TOKEN",     "")
 HF_MODEL_REPO = os.getenv("HF_MODEL_REPO", "")
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:8501")

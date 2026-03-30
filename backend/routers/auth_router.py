@@ -1,4 +1,5 @@
 # backend/routers/auth_router.py
+from beanie import PydanticObjectId  # add this import at the top
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -80,11 +81,16 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
             raise err
     except JWTError:
         raise err
-    user = await User.get(uid)
+
+    # ✅ Convert string to PydanticObjectId before Beanie lookup
+    try:
+        user = await User.get(PydanticObjectId(uid))
+    except Exception:
+        raise err
+
     if not user:
         raise err
     return user
-
 
 # ── POST /auth/register ────────────────────────────────────────────────────────
 @router.post("/register", status_code=201)

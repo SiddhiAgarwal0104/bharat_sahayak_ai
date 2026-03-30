@@ -10,6 +10,30 @@ router       = APIRouter()
 orchestrator = Orchestrator()
 form_agent   = FormAgent()
 
+# ── FIXED: /query must come BEFORE /{scheme_id}/... routes ──────────────────
+
+class QueryRequest(BaseModel):
+    input_type : str            = "text"
+    content    : str            = ""
+    action     : str            = "query"
+    scheme     : Optional[dict] = None
+    scheme_id  : Optional[str]  = None
+
+@router.post("/query")
+async def query(body: QueryRequest, current_user: User = Depends(get_current_user)):
+    result = await orchestrator.handle({
+        "user_id"   : str(current_user.id),
+        "input_type": body.input_type,
+        "content"   : body.content,
+        "action"    : body.action,
+        "language"  : current_user.language_pref or "hi",
+        "scheme"    : body.scheme,
+        "scheme_id" : body.scheme_id,
+    })
+    return result
+
+# ── Form routes below ────────────────────────────────────────────────────────
+
 @router.post("/{scheme_id}/start")
 async def start_form(scheme_id: str, current_user: User = Depends(get_current_user)):
     result = await orchestrator.handle({
@@ -49,23 +73,3 @@ async def complete_form(scheme_id: str, session_id: str,
                         current_user: User = Depends(get_current_user)):
     await form_agent.complete_session(session_id)
     return {"message": "Form guidance completed!", "session_id": session_id}
-
-class QueryRequest(BaseModel):
-    input_type : str            = "text"
-    content    : str            = ""
-    action     : str            = "query"
-    scheme     : Optional[dict] = None
-    scheme_id  : Optional[str]  = None
-
-@router.post("/query")
-async def query(body: QueryRequest, current_user: User = Depends(get_current_user)):
-    result = await orchestrator.handle({
-        "user_id"   : str(current_user.id),
-        "input_type": body.input_type,
-        "content"   : body.content,
-        "action"    : body.action,
-        "language"  : current_user.language_pref or "hi",
-        "scheme"    : body.scheme,
-        "scheme_id" : body.scheme_id,
-    })
-    return result
