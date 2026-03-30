@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { AuthProvider } from "./context/AuthContext"
 import ProtectedRoute from "./components/layout/ProtectedRoute"
 import Navbar from "./components/layout/Navbar"
+import Chatbot from "./components/Chatbot"
 
 import Landing       from "./pages/Landing"
 import Login         from "./pages/Login"
@@ -47,6 +48,7 @@ export default function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
+          <Chatbot />
         </div>
       </BrowserRouter>
     </AuthProvider>

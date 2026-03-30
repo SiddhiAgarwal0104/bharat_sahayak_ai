@@ -1,7 +1,7 @@
 // src/pages/FormPage.jsx
 // Apply guidance page — matches Dashboard.jsx green design system exactly
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import VoiceInput from "../components/ui/VoiceInput"
@@ -9,13 +9,45 @@ import { tr } from "../utils/i18n"
 import {
   ChevronLeft, ChevronRight, Loader2, CheckCircle2, AlertCircle,
   FileText, ExternalLink, Lightbulb, ArrowLeft, Star,
-  Sparkles, ShieldCheck, BookOpen
+  Sparkles, ShieldCheck, BookOpen, Volume2, VolumeX
 } from "lucide-react"
 
-// ── API helpers ───────────────────────────────────────────────────────────────
+// ── Text-to-Speech hook ───────────────────────────────────────────────────────
+function useTTS() {
+  const utteranceRef = useRef(null)
+  const [speaking, setSpeaking] = useState(false)
+
+  const speak = useCallback((text, lang = "en") => {
+    if (!window.speechSynthesis) return
+    window.speechSynthesis.cancel()
+    const utter = new SpeechSynthesisUtterance(text)
+    utter.lang = lang === "hi" ? "hi-IN" : "en-IN"
+    utter.rate = 0.92
+    utter.pitch = 1
+    utter.onstart = () => setSpeaking(true)
+    utter.onend   = () => setSpeaking(false)
+    utter.onerror = () => setSpeaking(false)
+    utteranceRef.current = utter
+    window.speechSynthesis.speak(utter)
+  }, [])
+
+  const stop = useCallback(() => {
+    window.speechSynthesis?.cancel()
+    setSpeaking(false)
+  }, [])
+
+  // stop on unmount
+  useEffect(() => () => window.speechSynthesis?.cancel(), [])
+
+  return { speak, stop, speaking }
+}
+
+
+const BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
+
 const API = async (url, opts = {}) => {
   const token = localStorage.getItem("token")
-  const res   = await fetch(url, {
+  const res   = await fetch(`${BASE}${url}`, {
     ...opts,
     headers: {
       "Content-Type": "application/json",
@@ -27,10 +59,11 @@ const API = async (url, opts = {}) => {
   return res.json()
 }
 
-const startFormSession  = (schemeId) => API(`/api/form/${schemeId}/start`, { method: "POST" })
-const getFormStep       = (schemeId, sessionId, n) => API(`/api/form/${schemeId}/step/${n}?session_id=${sessionId}`)
-const advanceFormStep   = (schemeId, sessionId) => API(`/api/form/${schemeId}/next`, { method: "POST", body: JSON.stringify({ session_id: sessionId }) })
-const completeFormSession = (schemeId, sessionId) => API(`/api/form/${schemeId}/complete`, { method: "POST", body: JSON.stringify({ session_id: sessionId }) })
+// ✅ Fixed: /form/ prefix (not /api/form/), session_id as query param
+const startFormSession    = (schemeId)              => API(`/form/${schemeId}/start`, { method: "POST" })
+const getFormStep         = (schemeId, sessionId, n) => API(`/form/${schemeId}/step/${n}?session_id=${sessionId}`)
+const advanceFormStep     = (schemeId, sessionId)   => API(`/form/${schemeId}/next?session_id=${sessionId}`, { method: "POST" })
+const completeFormSession = (schemeId, sessionId)   => API(`/form/${schemeId}/complete?session_id=${sessionId}`, { method: "POST" })
 
 // ── Step dot indicator ────────────────────────────────────────────────────────
 function StepDots({ total, current }) {
@@ -117,6 +150,7 @@ export default function FormPage() {
   const { user }     = useAuth()
   const navigate     = useNavigate()
   const lang         = user?.language_pref || "en"
+  const { speak, stop, speaking } = useTTS()
 
   const [sessionId,    setSessionId]    = useState(null)
   const [currentStep,  setCurrentStep]  = useState(null)
@@ -128,6 +162,15 @@ export default function FormPage() {
   const [completed,    setCompleted]    = useState(false)
   const [error,        setError]        = useState(null)
   const [schemeInfo,   setSchemeInfo]   = useState({})
+
+  // auto-read instruction aloud when step changes
+  useEffect(() => {
+    if (!currentStep) return
+    const text = lang === "hi" && currentStep.instruction_hi
+      ? currentStep.instruction_hi
+      : currentStep.instruction_en || currentStep.instruction || ""
+    if (text) speak(text, lang)
+  }, [currentStep])
 
   const progressPct = totalSteps > 0 ? Math.round((stepNumber / totalSteps) * 100) : 0
 
@@ -141,9 +184,9 @@ export default function FormPage() {
         setSchemeInfo(res.scheme || {})
         const first = await getFormStep(schemeId, res.session_id, 1)
         setCurrentStep(first)
-        // Pre-fill if available
         if (first?.prefilled_value) setFieldValue(String(first.prefilled_value))
       } catch (e) {
+        console.error("[FormPage] init error:", e)
         setError("Could not load form. Please try again.")
       } finally { setLoading(false) }
     }
@@ -160,44 +203,36 @@ export default function FormPage() {
       } else {
         setCurrentStep(res)
         setStepNumber(s => s + 1)
-        setFieldValue(res?.prefilled_value ? String(res.prefilled_value) : "")
+        setFieldValue(res.prefilled_value ? String(res.prefilled_value) : "")
       }
-    } catch (e) { setError(e.message) }
-    finally { setSubmitting(false) }
+    } catch (e) {
+      console.error("[FormPage] next error:", e)
+      setError("Failed to advance. Please try again.")
+    } finally { setSubmitting(false) }
   }
 
   const handleComplete = async () => {
-    setSubmitting(true)
-    try { await completeFormSession(schemeId, sessionId); setCompleted(true) }
-    catch (e) { setError(e.message) }
-    finally { setSubmitting(false) }
+    setSubmitting(true); setError(null)
+    try {
+      await completeFormSession(schemeId, sessionId)
+      setCompleted(true)
+    } catch (e) {
+      console.error("[FormPage] complete error:", e)
+      setError("Failed to complete. Please try again.")
+    } finally { setSubmitting(false) }
   }
 
-  // ── States ──────────────────────────────────────────────────────────────────
-  if (loading) return (
-    <div className="min-h-screen bg-[#f0fdf4] pt-[100px] flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="relative">
-          <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
-            <BookOpen className="h-10 w-10 text-green-500" />
-          </div>
-          <div className="absolute inset-0 rounded-full border-4 border-green-300 border-t-green-600 animate-spin" />
-        </div>
-        <p className="text-green-800 font-semibold">Preparing your guided form...</p>
-      </div>
-    </div>
-  )
+  if (completed) {
+    return (
+      <CompletionScreen
+        schemeName={schemeInfo.name || "this scheme"}
+        formUrl={schemeInfo.form_url || schemeInfo.application_url}
+        navigate={navigate}
+        lang={lang}
+      />
+    )
+  }
 
-  if (completed) return (
-    <CompletionScreen
-      schemeName={schemeInfo.name || ""}
-      formUrl={schemeInfo.form_url || schemeInfo.application_url || ""}
-      navigate={navigate}
-      lang={lang}
-    />
-  )
-
-  // ── Main form guidance UI ───────────────────────────────────────────────────
   return (
     <div className="bg-[#f0fdf4] min-h-screen pb-20 pt-[100px] relative">
 
@@ -205,83 +240,112 @@ export default function FormPage() {
       <div className="absolute top-0 left-0 w-full h-[400px] bg-gradient-to-b from-green-100 to-[#f0fdf4] pointer-events-none z-0" />
       <div className="absolute top-20 right-10 w-[400px] h-[400px] bg-emerald-300/20 rounded-full blur-[120px] pointer-events-none z-0" />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10 space-y-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
-        {/* Back */}
-        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 text-green-700 font-bold hover:text-green-900 transition-colors">
-          <ArrowLeft className="h-5 w-5" /> Back to scheme
+        {/* Back button */}
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 text-green-700 font-bold hover:text-green-900 transition-colors mb-6">
+          <ArrowLeft className="h-5 w-5" /> Back
         </button>
 
-        {/* ── Page header ─────────────────────────────────────────────── */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 md:p-8 shadow-[0_20px_60px_-15px_rgba(22,163,74,0.15)] border border-white">
-          <div className="flex items-center gap-3 mb-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200 text-green-800 text-xs font-black uppercase tracking-widest">
-              <Sparkles className="h-3.5 w-3.5 text-green-600" />
-              AI Form Guide
+        {/* Progress bar */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 mb-8 shadow-[0_10px_30px_rgba(22,163,74,0.08)] border border-white">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200 text-green-800 text-xs font-black uppercase tracking-widest">
+                <Sparkles className="h-3.5 w-3.5 text-green-600" />
+                AI-Guided Application
+              </div>
+              <h2 className="text-lg font-black text-green-950 hidden sm:block">
+                {schemeInfo.name || "Form Guidance"}
+              </h2>
+            </div>
+            <div className="flex items-center gap-3">
+              <StepDots total={totalSteps} current={stepNumber} />
+              <span className="text-sm font-black text-green-700">
+                {stepNumber} / {totalSteps}
+              </span>
             </div>
           </div>
-          <h1 className="text-2xl md:text-3xl font-black text-green-950 tracking-tight">
-            {schemeInfo.name || "Scheme Application"}
-          </h1>
-          <p className="text-green-700 font-medium mt-1">
-            Follow each step — we guide you field by field in your language
-          </p>
+          <div className="w-full bg-green-100 rounded-full h-2.5">
+            <div
+              className="bg-gradient-to-r from-green-500 to-emerald-500 h-2.5 rounded-full transition-all duration-700"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
         </div>
 
-        {/* ── Two-column layout ─────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          {/* LEFT — Main guidance column */}
-          <div className="lg:col-span-2 space-y-6">
-
-            {/* Progress card */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 md:p-8 shadow-[0_20px_60px_-15px_rgba(22,163,74,0.15)] border border-white">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <p className="text-xs font-black text-green-600 uppercase tracking-widest mb-1">
-                    Step {stepNumber} of {totalSteps}
-                  </p>
-                  <h2 className="text-xl md:text-2xl font-black text-green-950">Field-by-Field Guidance</h2>
-                </div>
-                <div className="text-right">
-                  <p className="text-4xl font-black text-green-600 leading-none">{progressPct}%</p>
-                  <p className="text-xs text-green-700 font-semibold mt-1">complete</p>
-                </div>
+        {/* Loading */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-green-600">
+            <div className="relative mb-6">
+              <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
+                <Sparkles className="h-10 w-10 text-green-500 animate-pulse" />
               </div>
-
-              {/* Progress bar */}
-              <div className="w-full bg-green-100/50 rounded-full h-3 overflow-hidden mb-3">
-                <div
-                  className="bg-gradient-to-r from-green-500 to-emerald-500 h-full rounded-full transition-all duration-700"
-                  style={{ width: `${progressPct}%` }}
-                />
-              </div>
-              <StepDots total={totalSteps} current={stepNumber} />
+              <div className="absolute inset-0 rounded-full border-4 border-green-300 border-t-green-600 animate-spin" />
             </div>
+            <h3 className="text-2xl font-bold text-green-950">Loading form guidance...</h3>
+          </div>
+        ) : error && !currentStep ? (
+          <div className="bg-red-50 border border-red-200 rounded-3xl p-10 text-center">
+            <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+            <p className="text-red-600 font-semibold mb-4">{error}</p>
+            <button onClick={() => navigate(-1)} className="px-6 py-3 bg-white border-2 border-red-200 text-red-700 rounded-xl font-bold hover:bg-red-50 transition-colors">
+              ← Go Back
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-            {/* Field card */}
-            {currentStep && (
-              <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 md:p-8 shadow-[0_20px_60px_-15px_rgba(22,163,74,0.15)] border border-white space-y-6">
+            {/* LEFT — Main form step */}
+            <div className="lg:col-span-2">
+              <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-10 shadow-[0_20px_60px_-15px_rgba(22,163,74,0.15)] border border-white space-y-6">
 
-                {/* Field name + required */}
+                {/* Step header */}
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="inline-flex items-center justify-center h-8 w-8 rounded-xl bg-green-100 text-green-700 text-sm font-black">{stepNumber}</span>
-                    <h3 className="text-xl md:text-2xl font-black text-green-950">
-                      {currentStep.field_name}
-                      {currentStep.required && <span className="text-red-500 ml-1">*</span>}
-                    </h3>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-green-100 to-emerald-50 border border-green-200 flex items-center justify-center shadow-inner">
+                      <FileText className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-green-600 uppercase tracking-widest">
+                        Field {stepNumber} of {totalSteps}
+                      </p>
+                      <h3 className="text-xl font-black text-green-950">
+                        {currentStep?.field_label || currentStep?.field_name || "Field"}
+                      </h3>
+                    </div>
                   </div>
-                  {/* Instruction — in user's language */}
-                  <p className="text-gray-700 leading-relaxed text-base pl-10">
-                    {lang === "hi"
-                      ? currentStep.instruction_hi || currentStep.instruction_en || currentStep.instruction
-                      : currentStep.instruction_en || currentStep.instruction}
-                  </p>
+                  <div className="flex items-start gap-3">
+                    <p className="text-green-800 leading-relaxed font-medium flex-1">
+                      {lang === "hi" && currentStep?.instruction_hi
+                        ? currentStep.instruction_hi
+                        : currentStep?.instruction_en || currentStep?.instruction}
+                    </p>
+                    <button
+                      onClick={() => {
+                        if (speaking) {
+                          stop()
+                        } else {
+                          const text = lang === "hi" && currentStep?.instruction_hi
+                            ? currentStep.instruction_hi
+                            : currentStep?.instruction_en || currentStep?.instruction || ""
+                          speak(text, lang)
+                        }
+                      }}
+                      title={speaking ? "Stop reading" : "Read aloud"}
+                      className={`flex-shrink-0 h-9 w-9 rounded-xl flex items-center justify-center transition-all border-2 ${
+                        speaking
+                          ? "bg-green-600 border-green-600 text-white shadow-[0_0_12px_rgba(22,163,74,0.4)] animate-pulse"
+                          : "bg-green-50 border-green-200 text-green-600 hover:bg-green-100"
+                      }`}
+                    >
+                      {speaking ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Pre-fill highlight */}
-                {currentStep.can_prefill && currentStep.prefilled_value && (
+                {currentStep?.can_prefill && currentStep?.prefilled_value && (
                   <div className="flex items-start gap-3 p-4 bg-green-50 border-2 border-green-200 rounded-2xl">
                     <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <div>
@@ -294,7 +358,7 @@ export default function FormPage() {
                 {/* Text input */}
                 <div className="space-y-3">
                   <label className="block text-sm font-bold text-green-900">
-                    {currentStep.can_prefill ? "Confirm or edit value:" : "Enter value:"}
+                    {currentStep?.can_prefill ? "Confirm or edit value:" : "Enter value:"}
                   </label>
                   <input
                     type="text"
@@ -347,92 +411,92 @@ export default function FormPage() {
                   </button>
                 </div>
               </div>
-            )}
-          </div>
-
-          {/* RIGHT — Sidebar */}
-          <div className="space-y-5">
-
-            {/* Document needed */}
-            {currentStep?.document_needed && (
-              <div className="bg-amber-50 backdrop-blur-xl rounded-[2.5rem] p-6 shadow-[0_10px_30px_rgba(22,163,74,0.08)] border-2 border-amber-200">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="h-10 w-10 rounded-xl bg-amber-100 flex items-center justify-center">
-                    <AlertCircle className="h-5 w-5 text-amber-600" />
-                  </div>
-                  <p className="font-black text-amber-900">Document Needed</p>
-                </div>
-                <p className="text-sm font-bold text-amber-800">
-                  {typeof currentStep.document_needed === "object"
-                    ? currentStep.document_needed.name
-                    : currentStep.document_needed}
-                </p>
-                <p className="text-xs text-amber-700 mt-1">Keep this document open and ready</p>
-              </div>
-            )}
-
-            {/* Government link */}
-            {(schemeInfo.form_url || schemeInfo.application_url) && (
-              <div className="bg-blue-50 backdrop-blur-xl rounded-[2.5rem] p-6 shadow-[0_10px_30px_rgba(22,163,74,0.08)] border-2 border-blue-200">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                    <ExternalLink className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <p className="font-black text-blue-900">Official Form</p>
-                </div>
-                <p className="text-xs text-blue-700 mb-3 font-medium">Open in a new tab. This guide follows the exact field order on that page.</p>
-                <a
-                  href={schemeInfo.form_url || schemeInfo.application_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all text-sm w-full justify-center"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Open Form Tab
-                </a>
-              </div>
-            )}
-
-            {/* Tips */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 shadow-[0_10px_30px_rgba(22,163,74,0.08)] border border-white">
-              <div className="flex items-center gap-2 mb-4">
-                <Lightbulb className="h-5 w-5 text-amber-500" />
-                <h3 className="font-black text-green-950">Tips</h3>
-              </div>
-              <ul className="space-y-2.5">
-                {[
-                  "Keep your Aadhaar card nearby",
-                  "Have your bank passbook open",
-                  "Use the same name as on Aadhaar",
-                  "Screenshot each completed field",
-                  "Do not close the form tab between steps",
-                ].map((tip, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-green-800">
-                    <span className="h-5 w-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 text-xs font-black mt-0.5">{i + 1}</span>
-                    {tip}
-                  </li>
-                ))}
-              </ul>
             </div>
 
-            {/* Progress summary */}
-            <div className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-[2.5rem] p-6 shadow-[0_10px_30px_rgba(22,163,74,0.3)]">
-              <div className="flex items-center gap-2 mb-4">
-                <ShieldCheck className="h-5 w-5 text-white/80" />
-                <p className="text-white/80 text-sm font-black uppercase tracking-widest">Your Progress</p>
-              </div>
-              <div className="flex items-baseline gap-2 mb-3">
-                <span className="text-5xl font-black text-white">{stepNumber}</span>
-                <span className="text-white/60 text-lg font-bold">/ {totalSteps}</span>
-              </div>
-              <p className="text-white/80 text-sm font-medium">fields guided so far</p>
-              <div className="mt-4 w-full bg-white/20 rounded-full h-2">
-                <div className="bg-white rounded-full h-2 transition-all duration-700" style={{ width: `${progressPct}%` }} />
-              </div>
-            </div>
+            {/* RIGHT — Sidebar */}
+            <div className="space-y-5">
 
+              {/* Document needed */}
+              {currentStep?.document_needed && (
+                <div className="bg-amber-50 backdrop-blur-xl rounded-[2.5rem] p-6 shadow-[0_10px_30px_rgba(22,163,74,0.08)] border-2 border-amber-200">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="h-10 w-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                      <AlertCircle className="h-5 w-5 text-amber-600" />
+                    </div>
+                    <p className="font-black text-amber-900">Document Needed</p>
+                  </div>
+                  <p className="text-sm font-bold text-amber-800">
+                    {typeof currentStep.document_needed === "object"
+                      ? currentStep.document_needed.name
+                      : currentStep.document_needed}
+                  </p>
+                  <p className="text-xs text-amber-700 mt-1">Keep this document open and ready</p>
+                </div>
+              )}
+
+              {/* Government link */}
+              {(schemeInfo.form_url || schemeInfo.application_url) && (
+                <div className="bg-blue-50 backdrop-blur-xl rounded-[2.5rem] p-6 shadow-[0_10px_30px_rgba(22,163,74,0.08)] border-2 border-blue-200">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                      <ExternalLink className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <p className="font-black text-blue-900">Official Form</p>
+                  </div>
+                  <p className="text-xs text-blue-700 mb-3 font-medium">Open in a new tab. This guide follows the exact field order on that page.</p>
+                  <a
+                    href={schemeInfo.form_url || schemeInfo.application_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all text-sm w-full justify-center"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Open Form Tab
+                  </a>
+                </div>
+              )}
+
+              {/* Tips */}
+              <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 shadow-[0_10px_30px_rgba(22,163,74,0.08)] border border-white">
+                <div className="flex items-center gap-2 mb-4">
+                  <Lightbulb className="h-5 w-5 text-amber-500" />
+                  <h3 className="font-black text-green-950">Tips</h3>
+                </div>
+                <ul className="space-y-2.5">
+                  {[
+                    "Keep your Aadhaar card nearby",
+                    "Have your bank passbook open",
+                    "Use the same name as on Aadhaar",
+                    "Screenshot each completed field",
+                    "Do not close the form tab between steps",
+                  ].map((tip, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-green-800">
+                      <span className="h-5 w-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 text-xs font-black mt-0.5">{i + 1}</span>
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Progress summary */}
+              <div className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-[2.5rem] p-6 shadow-[0_10px_30px_rgba(22,163,74,0.3)]">
+                <div className="flex items-center gap-2 mb-4">
+                  <ShieldCheck className="h-5 w-5 text-white/80" />
+                  <p className="text-white/80 text-sm font-black uppercase tracking-widest">Your Progress</p>
+                </div>
+                <div className="flex items-baseline gap-2 mb-3">
+                  <span className="text-5xl font-black text-white">{stepNumber}</span>
+                  <span className="text-white/60 text-lg font-bold">/ {totalSteps}</span>
+                </div>
+                <p className="text-white/80 text-sm font-medium">fields guided so far</p>
+                <div className="mt-4 w-full bg-white/20 rounded-full h-2">
+                  <div className="bg-white rounded-full h-2 transition-all duration-700" style={{ width: `${progressPct}%` }} />
+                </div>
+              </div>
+
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

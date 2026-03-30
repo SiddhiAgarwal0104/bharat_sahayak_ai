@@ -1,0 +1,91 @@
+{
+  "scheme_id": "69ca7fc0e7a349cf1a7ec540",
+  "scheme_name": "National Pension System (NPS)",
+  "form_url": "https://www.myscheme.gov.in",
+  "fields": [
+    {
+      "field_id": 1,
+      "field_name": "Applicant Name",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.name",
+      "instruction_en": "Enter your full name as per Aadhaar card.",
+      "instruction_hi": "अपना पूरा नाम आधार कार्ड के अनुसार लिखें।",
+      "document_needed": "Aadhaar Card",
+      "validation": null
+    },
+    {
+      "field_id": 2,
+      "field_name": "Date of Birth",
+      "field_type": "date",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.age",
+      "instruction_en": "Enter your date of birth in DD/MM/YYYY format.",
+      "instruction_hi": "जन्म तिथि DD/MM/YYYY प्रारूप में दर्ज करें।",
+      "document_needed": "Aadhaar Card",
+      "validation": null
+    },
+    {
+      "field_id": 3,
+      "field_name": "Gender",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.gender",
+      "instruction_en": "Select your gender.",
+      "instruction_hi": "अपना लिंग चुनें।",
+      "document_needed": null,
+      "validation": null
+    },
+    {
+      "field_id": 4,
+      "field_name": "Address",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": true,
+      "prefill_source": "user.location",
+      "instruction_en": "Enter your full residential address including district and state.",
+      "instruction_hi": "अपना पूरा पता दर्ज करें — जिला और राज्य सहित।",
+      "document_needed": "Aadhaar Card or Voter ID",
+      "validation": null
+    },
+    {
+      "field_id": 5,
+      "field_name": "Mobile Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter your 10-digit mobile number linked to Aadhaar.",
+      "instruction_hi": "आधार से जुड़ा 10 अंकों का मोबाइल नंबर दर्ज करें।",
+      "document_needed": null,
+      "validation": "10 digits"
+    },
+    {
+      "field_id": 6,
+      "field_name": "Employment Type",
+      "field_type": "dropdown",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Select whether you are a government or private sector employee.",
+      "instruction_hi": "चुनें — सरकारी या निजी क्षेत्र का कर्मचारी।",
+      "document_needed": "Employment Certificate",
+      "validation": null
+    },
+    {
+      "field_id": 7,
+      "field_name": "Bank Account Number",
+      "field_type": "text",
+      "required": true,
+      "can_prefill": false,
+      "prefill_source": null,
+      "instruction_en": "Enter bank account number for pension credit.",
+      "instruction_hi": "पेंशन के लिए बैंक खाता नंबर दर्ज करें।",
+      "document_needed": "Bank Passbook",
+      "validation": null
+    }
+  ]
+}

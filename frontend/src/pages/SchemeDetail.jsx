@@ -1,7 +1,7 @@
 // src/pages/SchemeDetail.jsx
 // Explain scheme page — matches Dashboard.jsx green design system exactly
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { getScheme } from "../api/api"
 import { useAuth } from "../context/AuthContext"
@@ -9,7 +9,8 @@ import { tr } from "../utils/i18n"
 import {
   ArrowLeft, ShieldCheck, Sparkles, CheckCircle2, XCircle,
   FileText, ExternalLink, Loader2, AlertCircle,
-  IndianRupee, Users, Calendar, BookOpen, ArrowRight, Star
+  IndianRupee, Users, Calendar, BookOpen, ArrowRight, Star,
+  Volume2, VolumeX, Play, Square
 } from "lucide-react"
 
 const CATEGORY_META = {
@@ -19,6 +20,11 @@ const CATEGORY_META = {
   women:       { bg: "bg-pink-100",  text: "text-pink-800",  dot: "bg-pink-500",  border: "border-pink-200"  },
   education:   { bg: "bg-blue-100",  text: "text-blue-800",  dot: "bg-blue-500",  border: "border-blue-200"  },
   other:       { bg: "bg-gray-100",  text: "text-gray-700",  dot: "bg-gray-400",  border: "border-gray-200"  },
+}
+
+const LANG_LABEL = {
+  hi: "Hindi", en: "English", ta: "Tamil",
+  te: "Telugu", bn: "Bengali", mr: "Marathi",
 }
 
 const getSchemeImage = (name = "", category = "") => {
@@ -52,15 +58,129 @@ function checkEligibility(user, criteria) {
   return checks
 }
 
+// ── Voice Player Hook ────────────────────────────────────────────────────────
+function useVoicePlayer(schemeId, lang) {
+  const audioRef        = useRef(null)
+  const [state, setState] = useState("idle")   // "idle" | "loading" | "playing" | "error"
+
+  // Cleanup on unmount
+  useEffect(() => () => {
+    if (audioRef.current) {
+      audioRef.current.pause()
+      URL.revokeObjectURL(audioRef.current.src)
+    }
+  }, [])
+
+  const play = async () => {
+    // If already playing, stop it
+    if (state === "playing" && audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+      setState("idle")
+      return
+    }
+
+    // If audio already loaded, just replay
+    if (audioRef.current && state === "idle") {
+      try {
+        await audioRef.current.play()
+        setState("playing")
+        return
+      } catch (_) { /* fall through to re-fetch */ }
+    }
+
+    setState("loading")
+    try {
+      const token = localStorage.getItem("token")
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
+      const res = await fetch(
+        `${backendUrl}/schemes/${schemeId}/voice?lang=${lang}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+
+      const blob    = await res.blob()
+      const blobUrl = URL.createObjectURL(blob)
+
+      // Revoke old object URL if any
+      if (audioRef.current) URL.revokeObjectURL(audioRef.current.src)
+
+      const audio = new Audio(blobUrl)
+      audioRef.current = audio
+
+      audio.onended = () => setState("idle")
+      audio.onerror = () => setState("error")
+
+      await audio.play()
+      setState("playing")
+    } catch (e) {
+      console.error("[VoicePlayer] fetch/play error:", e)
+      setState("error")
+    }
+  }
+
+  const stop = () => {
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+    }
+    setState("idle")
+  }
+
+  return { state, play, stop }
+}
+
+// ── Voice Button Component ───────────────────────────────────────────────────
+function VoiceButton({ schemeId, lang }) {
+  const { state, play } = useVoicePlayer(schemeId, lang)
+  const langLabel = LANG_LABEL[lang] || "Hindi"
+
+  const label = {
+    idle:    `Listen in ${langLabel}`,
+    loading: "Generating audio…",
+    playing: "Stop audio",
+    error:   "Audio unavailable — retry",
+  }[state]
+
+  const Icon = state === "playing" ? Square
+             : state === "loading" ? Loader2
+             : state === "error"   ? VolumeX
+             : Volume2
+
+  const colorClass = state === "error"
+    ? "bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+    : state === "playing"
+    ? "bg-green-600 border-green-600 text-white hover:bg-green-700"
+    : "bg-white border-green-200 text-green-700 hover:bg-green-50 hover:-translate-y-0.5"
+
+  return (
+    <button
+      onClick={play}
+      disabled={state === "loading"}
+      title={label}
+      className={`flex items-center justify-center gap-2 px-6 py-4 border-2 rounded-2xl font-bold transition-all disabled:opacity-60 disabled:cursor-not-allowed ${colorClass}`}
+    >
+      <Icon className={`h-5 w-5 flex-shrink-0 ${state === "loading" ? "animate-spin" : ""}`} />
+      <span className="whitespace-nowrap">{label}</span>
+    </button>
+  )
+}
+
+// ── Main Page ────────────────────────────────────────────────────────────────
 export default function SchemeDetail() {
   const { id }   = useParams()
   const { user } = useAuth()
   const navigate = useNavigate()
   const lang     = user?.language_pref || "en"
 
-  const [scheme,  setScheme]  = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error,   setError]   = useState(null)
+  const [scheme,      setScheme]      = useState(null)
+  const [loading,     setLoading]     = useState(true)
+  const [error,       setError]       = useState(null)
+  const [translated,  setTranslated]  = useState(null)   // translated fields from Gemini
+  const [translating, setTranslating] = useState(false)  // spinner while Gemini works
+
+  // Helper: pick translated text if available, else fall back to English
+  const t = (field) => translated?.[field] || scheme?.[field] || ""
 
   useEffect(() => {
     getScheme(id)
@@ -68,6 +188,20 @@ export default function SchemeDetail() {
       .catch(() => setError("Could not load scheme. Please try again."))
       .finally(() => setLoading(false))
   }, [id])
+
+  // Fetch Gemini translation whenever scheme loads and language is not English
+  useEffect(() => {
+    if (!scheme || lang === "en") return
+    const token = localStorage.getItem("token")
+    setTranslating(true)
+    fetch(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"}/schemes/${scheme.id}/translate?lang=${lang}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(r => r.json())
+      .then(data => { if (data.translated) setTranslated(data) })
+      .catch(e => console.warn("[SchemeDetail] translation fetch failed:", e))
+      .finally(() => setTranslating(false))
+  }, [scheme, lang])
 
   if (loading) return (
     <div className="min-h-screen bg-[#f0fdf4] pt-[100px] flex items-center justify-center">
@@ -96,8 +230,8 @@ export default function SchemeDetail() {
   const meta    = CATEGORY_META[cat] || CATEGORY_META.other
   const checks  = checkEligibility(user, scheme.eligibility_criteria)
   const allPass = checks.length > 0 && checks.every(c => c.pass)
-  const docs    = scheme.docs_needed
-    ? scheme.docs_needed.split(/[,\n]/).map(d => d.trim()).filter(Boolean)
+  const docs    = t("docs_needed")
+    ? t("docs_needed").split(/[,\n]/).map(d => d.trim()).filter(Boolean)
     : []
 
   return (
@@ -143,11 +277,18 @@ export default function SchemeDetail() {
 
           {/* Description */}
           <div className="p-8 md:p-10">
+            {/* Translating indicator */}
+            {translating && (
+              <div className="flex items-center gap-2 mb-4 text-sm text-green-700 font-semibold">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Translating to {LANG_LABEL[lang] || lang}...
+              </div>
+            )}
             <p className="text-gray-700 leading-relaxed text-lg mb-8">
-              {scheme.description}
+              {t("description")}
             </p>
 
-            {/* Two action buttons */}
+            {/* Three action buttons — Apply, Official Portal, Voice */}
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => navigate(`/scheme/${scheme.id}/form`)}
@@ -159,6 +300,10 @@ export default function SchemeDetail() {
                   <ArrowRight className="h-4 w-4" />
                 </span>
               </button>
+
+              {/* ── Voice Button ── */}
+              <VoiceButton schemeId={scheme.id} lang={lang} />
+
               {scheme.form_url && (
                 <a
                   href={scheme.form_url}
@@ -187,7 +332,7 @@ export default function SchemeDetail() {
                 <h2 className="text-xl font-black text-green-950">Benefits</h2>
               </div>
               <div className="bg-green-50 border border-green-100 rounded-2xl p-4">
-                <p className="text-green-900 font-semibold leading-relaxed">{scheme.benefits}</p>
+                <p className="text-green-900 font-semibold leading-relaxed">{t("benefits")}</p>
               </div>
             </div>
           )}

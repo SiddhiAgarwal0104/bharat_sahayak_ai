@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.config import settings
 from backend.db.database import connect_db, close_db
 from backend.db.vector_store import load_index
-from backend.routers.scheme_router import profile_router
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
@@ -25,6 +24,7 @@ app.add_middleware(
 )
 
 app.mount("/pdfs", StaticFiles(directory="data/schemes"), name="pdfs")
+
 # ── Member 1 routers ──────────────────────────────────────────────────────────
 try:
     from backend.routers.auth_router import router as auth_router
@@ -58,14 +58,16 @@ try:
 except Exception as e:
     print(f"[main] scheme_router not loaded: {e}")
 
-app.include_router(profile_router)
-
 # ── Member 4 routers (added later) ───────────────────────────────────────────
-# from backend.routers.form_router import router as form_router
-# app.include_router(form_router)
 from backend.routers.form_router import router as form_router
-
 app.include_router(form_router, prefix="/form", tags=["Forms"])
+
+# ── Chatbot ───────────────────────────────────────────────────────────────────
+try:
+    from backend.routers.chatbot_router import router as chatbot_router
+    app.include_router(chatbot_router)
+except Exception as e:
+    print(f"[main] chatbot_router not loaded: {e}")
 
 # ── Startup / Shutdown ────────────────────────────────────────────────────────
 @app.on_event("startup")
@@ -107,5 +109,6 @@ def root():
             "2": "NLP, profile, eligibility",
             "3": "schemes, search, embeddings",
             "4": "forms, orchestrator (coming soon)",
+            "chatbot": "general AI guide"
         }
     }
