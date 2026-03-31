@@ -8,12 +8,12 @@ import VoiceSearch from "../components/ui/VoiceSearch";
 
 const getSchemeImage = (title, category) => {
   const t = (title + " " + category).toLowerCase();
-  if (t.includes("farm") || t.includes("kisan") || t.includes("krishi")) return "https://images.pexels.com/photos/10327341/pexels-photo-10327341.jpeg?auto=compress&cs=tinysrgb&w=600";
-  if (t.includes("awas") || t.includes("house") || t.includes("home")) return "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=600";
-  if (t.includes("health") || t.includes("ayushman") || t.includes("medical")) return "https://images.pexels.com/photos/4386466/pexels-photo-4386466.jpeg?auto=compress&cs=tinysrgb&w=600";
-  if (t.includes("business") || t.includes("mudra") || t.includes("finance")) return "https://images.pexels.com/photos/6863515/pexels-photo-6863515.jpeg?auto=compress&cs=tinysrgb&w=600";
-  if (t.includes("education") || t.includes("scholar") || t.includes("vidya")) return "https://images.pexels.com/photos/4050291/pexels-photo-4050291.jpeg?auto=compress&cs=tinysrgb&w=600";
-  return "https://images.pexels.com/photos/1598075/pexels-photo-1598075.jpeg?auto=compress&cs=tinysrgb&w=600"; 
+  if (t.includes("farm") || t.includes("kisan") || t.includes("krishi") || t.includes("agriculture")) return "/images/agriculture.jpg";
+  if (t.includes("health") || t.includes("ayushman") || t.includes("medical")) return "/images/health.jpg";
+  if (t.includes("education") || t.includes("scholar") || t.includes("vidya")) return "/images/education.jpg";
+  if (t.includes("woman") || t.includes("women") || t.includes("mahila") || t.includes("beti")) return "/images/women.jpg";
+  if (t.includes("pension") || t.includes("atal") || t.includes("nps") || t.includes("old age")) return "/images/pension.jpg";
+  return "/images/home.jpg"; 
 };
 
 export default function Dashboard() {

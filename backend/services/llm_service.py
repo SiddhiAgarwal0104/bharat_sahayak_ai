@@ -5,7 +5,7 @@ import re
 from backend.config import settings
 
 genai.configure(api_key=settings.GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')   # ← fix: 2.5-flash doesn't exist yet
+model = genai.GenerativeModel('gemini-2.5-flash')   # ← fix: 2.5-flash doesn't exist yet
 
 LANG_MAP = {
     'hi': 'Hindi',

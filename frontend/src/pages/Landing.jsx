@@ -80,7 +80,7 @@ export default function Landing() {
             {/* Main Picture without heavy tint */}
             <div className="relative rounded-[2rem] overflow-hidden border-8 border-white shadow-2xl z-10 bg-gray-100">
               <img 
-                src="https://images.pexels.com/photos/10327341/pexels-photo-10327341.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                src="/images/home.jpg" 
                 alt="Happy diverse beneficiaries"
                 className="w-full h-[450px] object-cover"
               />

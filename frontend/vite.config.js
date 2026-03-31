@@ -9,6 +9,7 @@ export default defineConfig({
       '/stt':     'http://127.0.0.1:8000',
       '/query':   'http://127.0.0.1:8000',
       '/schemes': 'http://127.0.0.1:8000',
+      '/chatbot': 'http://127.0.0.1:8000',  // ← added
     }
   }
 })

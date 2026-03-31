@@ -25,17 +25,17 @@ const CATEGORY_META = {
 
 const getSchemeImage = (name = "", category = "") => {
   const t = (name + " " + category).toLowerCase()
-  if (t.includes("farm") || t.includes("kisan") || t.includes("krishi"))
-    return "https://images.pexels.com/photos/10327341/pexels-photo-10327341.jpeg?auto=compress&cs=tinysrgb&w=600"
+  if (t.includes("farm") || t.includes("kisan") || t.includes("krishi") || t.includes("agriculture"))
+    return "/images/agriculture.jpg"
   if (t.includes("health") || t.includes("ayushman") || t.includes("medical"))
-    return "https://images.pexels.com/photos/4386466/pexels-photo-4386466.jpeg?auto=compress&cs=tinysrgb&w=600"
-  if (t.includes("pension") || t.includes("atal") || t.includes("nps"))
-    return "https://images.pexels.com/photos/3823488/pexels-photo-3823488.jpeg?auto=compress&cs=tinysrgb&w=600"
-  if (t.includes("women") || t.includes("mahila") || t.includes("beti"))
-    return "https://images.pexels.com/photos/3768911/pexels-photo-3768911.jpeg?auto=compress&cs=tinysrgb&w=600"
+    return "/images/health.jpg"
+  if (t.includes("pension") || t.includes("atal") || t.includes("nps") || t.includes("old age"))
+    return "/images/pension.jpg"
+  if (t.includes("women") || t.includes("mahila") || t.includes("beti") || t.includes("woman"))
+    return "/images/women.jpg"
   if (t.includes("education") || t.includes("scholar") || t.includes("vidya"))
-    return "https://images.pexels.com/photos/4050291/pexels-photo-4050291.jpeg?auto=compress&cs=tinysrgb&w=600"
-  return "https://images.pexels.com/photos/1598075/pexels-photo-1598075.jpeg?auto=compress&cs=tinysrgb&w=600"
+    return "/images/education.jpg"
+  return "/images/home.jpg"
 }
 
 // ── Single scheme result card ─────────────────────────────────────────────────

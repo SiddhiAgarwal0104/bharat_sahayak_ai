@@ -11,7 +11,8 @@ Endpoints:
   GET  /schemes/{scheme_id}          → full details for one scheme
   POST /schemes/search               → main search — takes intent_obj + candidate_ids
   GET  /schemes/all                  → list all schemes (admin/debug)
-  GET  /schemes/{scheme_id}/voice    → TTS audio for scheme explanation (NEW)
+  GET  /schemes/{scheme_id}/voice    → TTS audio for scheme explanation
+  GET  /schemes/{scheme_id}/translate → translated fields in requested language
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -20,6 +21,8 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 from bson import ObjectId
 from bson.errors import InvalidId
+import json
+import re
 from backend.agents.search_agent import SearchAgent
 from backend.agents.explainer_agent import ExplainerAgent
 from backend.agents.profile_agent import ProfileAgent
@@ -34,13 +37,9 @@ _search_agent = SearchAgent()
 _explainer_agent = ExplainerAgent()
 
 
-# ── Auth helper ───────────────────────────────────────────────────────────────
+# ── Auth helpers ──────────────────────────────────────────────────────────────
 
 def _get_user_id(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
-    """
-    Decode JWT and return user_id (MongoDB ObjectId string).
-    Returns "" (anonymous) if no token provided.
-    """
     if credentials is None:
         return ""
     try:
@@ -51,10 +50,6 @@ def _get_user_id(credentials: HTTPAuthorizationCredentials = Depends(security)) 
 
 
 def _get_user_obj(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """
-    Returns a minimal user dict from JWT payload.
-    user_id is kept as a string (MongoDB ObjectId hex) — NOT cast to int.
-    """
     if credentials is None:
         return {"user_id": "", "language_pref": "en", "location": ""}
     try:
@@ -68,23 +63,79 @@ def _get_user_obj(credentials: HTTPAuthorizationCredentials = Depends(security))
         return {"user_id": "", "language_pref": "en", "location": ""}
 
 
-# ── Endpoints ─────────────────────────────────────────────────────────────────
+# ── Internal helpers ──────────────────────────────────────────────────────────
 
-# NOTE: /recommended and /all MUST be defined BEFORE /{scheme_id}
-# so FastAPI does not swallow them as path parameters.
+def _strip_markdown(text: str) -> str:
+    """Remove markdown symbols that may appear in DB text or LLM output."""
+    if not text:
+        return text
+    text = re.sub(r'\*{1,3}(.*?)\*{1,3}', r'\1', text)
+    text = re.sub(r'#{1,6}\s?', '', text)
+    text = re.sub(r'^[-•●▪]\s?', '', text, flags=re.MULTILINE)
+    text = re.sub(r'^\d+[\.\)]\s?', '', text, flags=re.MULTILINE)
+    text = re.sub(r'\n{2,}', ' ', text)
+    text = re.sub(r'\n', ' ', text)
+    text = re.sub(r'\s{2,}', ' ', text)
+    return text.strip()
+
+
+def _resolve_scheme(col, scheme_id: str):
+    """Try ObjectId lookup first, then fall back to numeric embedding_id."""
+    doc = None
+    try:
+        doc = col.find_one({"_id": ObjectId(scheme_id)})
+    except (InvalidId, Exception):
+        pass
+
+    if doc is None and scheme_id.isdigit():
+        doc = col.find_one({"embedding_id": int(scheme_id)})
+
+    return doc
+
+
+def _extract_json_from_response(raw: str) -> dict | None:
+    """
+    Robustly extract a JSON object from a Gemini response string.
+    Handles:
+      - Clean JSON
+      - JSON wrapped in ```json ... ``` fences
+      - JSON buried inside extra prose (finds first { ... } block)
+    Returns parsed dict or None on failure.
+    """
+    if not raw:
+        return None
+
+    # Step 1: strip markdown fences
+    cleaned = raw.strip()
+    cleaned = re.sub(r'^```(?:json)?\s*', '', cleaned)
+    cleaned = re.sub(r'\s*```$', '', cleaned)
+    cleaned = cleaned.strip()
+
+    # Step 2: try direct parse
+    try:
+        return json.loads(cleaned)
+    except Exception:
+        pass
+
+    # Step 3: find first {...} block in the response (handles prose wrapping)
+    match = re.search(r'\{.*\}', cleaned, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group())
+        except Exception:
+            pass
+
+    return None
+
+
+# ── Endpoints ─────────────────────────────────────────────────────────────────
 
 @router.get("/recommended")
 async def get_recommended(user=Depends(_get_user_obj)):
-    """
-    Return top recommended schemes for the logged-in user.
-    Anonymous users receive an empty list.
-    """
-    # FIX 1: extract user_id from the user dict (was referencing undefined `user_id`)
     user_id = user["user_id"]
     if not user_id:
-        return []   # anonymous — nothing to recommend
+        return []
 
-    # FIX 2: build intent_obj (was referencing undefined `intent_obj`)
     intent_obj = {
         "query_text": "recommended schemes",
         "language":   user.get("language_pref", "en"),
@@ -99,13 +150,6 @@ async def get_recommended(user=Depends(_get_user_obj)):
 
 @router.get("/by-category/{category}")
 def get_by_category(category: str):
-    """
-    Return all scheme IDs and their eligibility_criteria for a given category.
-    Called by Member 2's profile_agent to get candidates before filtering.
-
-    Args:
-        category: "health" | "pension" | "agriculture" | "women"
-    """
     valid_categories = {"health", "pension", "agriculture", "women"}
     if category not in valid_categories:
         raise HTTPException(
@@ -128,26 +172,12 @@ def get_by_category(category: str):
 
 @router.get("/all")
 def get_all_schemes():
-    """Return all schemes — useful for debugging and admin view."""
     col = get_schemes_collection()
     return [format_scheme(doc) for doc in col.find()]
 
 
 @router.post("/search")
 def search_schemes(body: dict, user=Depends(_get_user_obj)):
-    """
-    Main search endpoint — called by the orchestrator.
-
-    Request body:
-        {
-            "intent_obj":    { "query_text": str, "language": str,
-                               "intent": str, "slots": {} },
-            "candidate_ids": [1, 3, 7, ...]   ← from Member 2's profile agent
-        }
-
-    Returns:
-        List of up to 3 scheme dicts with match_score and is_best_match.
-    """
     intent_obj    = body.get("intent_obj")
     candidate_ids = body.get("candidate_ids", [])
 
@@ -166,87 +196,95 @@ def search_schemes(body: dict, user=Depends(_get_user_obj)):
 @router.get("/{scheme_id}/translate")
 def translate_scheme(scheme_id: str, lang: str = "hi"):
     """
-    Translate scheme fields into the requested language using Gemini.
-    Falls back to original English on any error.
+    Translate scheme display fields into the requested Indic language using Gemini.
+
+    Sends all three fields in ONE JSON prompt for consistency and speed.
+    Falls back gracefully — always returns something so the UI is never blank.
     """
-    # Normalize lang — reject full words like "Hindi" 
     VALID_LANGS = {"hi", "ta", "te", "bn", "mr"}
     if lang not in VALID_LANGS:
-        return {"translated": False}   # "en" or anything invalid → no translation needed
+        return {"translated": False}
 
     col = get_schemes_collection()
-
-    doc = None
-    try:
-        doc = col.find_one({"_id": ObjectId(scheme_id)})
-    except (InvalidId, Exception):
-        pass
-
-    if doc is None and scheme_id.isdigit():
-        doc = col.find_one({"embedding_id": int(scheme_id)})
+    doc = _resolve_scheme(col, scheme_id)
 
     if not doc:
         raise HTTPException(status_code=404, detail="Scheme not found")
 
-    scheme   = format_scheme(doc)
+    scheme    = format_scheme(doc)
     lang_name = LANG_MAP.get(lang, "Hindi")
 
-    def translate_field(text: str, field_label: str) -> str:
-        if not text or not text.strip():
-            return text
-        try:
-            prompt = (
-                f"Translate the following government scheme {field_label} into simple {lang_name}. "
-                f"Keep all numbers, rupee amounts, and proper nouns unchanged. "
-                f"Return ONLY the translated text, no explanations, no markdown.\n\n"
-                f"{text[:800]}"   # cap at 800 chars to keep Gemini fast
-            )
-            result = generate(prompt, lang)
-            return result.strip() if result else text
-        except Exception as e:
-            print(f"[translate_scheme] field '{field_label}' failed: {e}")
-            return text   # fallback to English on any error
+    # Strip markdown from source text before sending to Gemini so the model
+    # is not confused by bullet symbols in the input.
+    # Do NOT cap text length — truncating caused cut-off sentences that
+    # broke Gemini's JSON output. Gemini 1.5-flash handles long text fine.
+    fields_to_translate = {}
+    for field in ("description", "benefits", "docs_needed"):
+        val = scheme.get(field, "")
+        if val and val.strip():
+            fields_to_translate[field] = _strip_markdown(val.strip())
 
-    description = translate_field(scheme.get("description", ""), "description")
-    benefits    = translate_field(scheme.get("benefits", ""),    "benefits")
-    docs_needed = translate_field(scheme.get("docs_needed", ""), "documents needed")
+    if not fields_to_translate:
+        print(f"[translate_scheme] No fields to translate for scheme={scheme_id}")
+        return {"translated": False}
 
-    print(f"[translate_scheme] {scheme_id} → {lang} done")
+    print(f"[translate_scheme] Sending to Gemini: scheme={scheme_id} lang={lang} "
+          f"fields={list(fields_to_translate.keys())} "
+          f"desc_len={len(fields_to_translate.get('description', ''))}")
 
-    return {
-        "translated":  True,
-        "language":    lang,
-        "description": description,
-        "benefits":    benefits,
-        "docs_needed": docs_needed,
+    prompt = (
+        f"You are a government scheme translator for Indian citizens.\n"
+        f"Translate ONLY the values in the JSON below into simple, spoken {lang_name}.\n"
+        f"A common citizen with basic education must be able to understand it.\n\n"
+        f"STRICT RULES:\n"
+        f"1. Return ONLY a valid JSON object with exactly the same keys as given.\n"
+        f"2. Do NOT add any text before or after the JSON.\n"
+        f"3. Do NOT use markdown, bullet points, asterisks, or numbering.\n"
+        f"4. Keep all numbers, rupee amounts, URLs, and proper nouns unchanged.\n"
+        f"5. If a value is already short and simple, keep the translation concise too.\n\n"
+        f"Input JSON:\n"
+        f"{json.dumps(fields_to_translate, ensure_ascii=False)}"
+    )
+
+    raw = generate(prompt, lang)
+
+    print(f"[translate_scheme] Gemini raw (first 300 chars): {repr(raw[:300]) if raw else 'EMPTY'}")
+
+    # Parse robustly — handles fences, prose wrapping, etc.
+    parsed = _extract_json_from_response(raw)
+
+    if not parsed:
+        # Gemini failed to return valid JSON — return cleaned English originals
+        # so the UI shows something readable instead of spinning forever.
+        print(f"[translate_scheme] Parse failed scheme={scheme_id} lang={lang} — returning English fallback")
+        return {
+            "translated":  False,
+            "description": fields_to_translate.get("description", scheme.get("description", "")),
+            "benefits":    fields_to_translate.get("benefits",    scheme.get("benefits", "")),
+            "docs_needed": fields_to_translate.get("docs_needed", scheme.get("docs_needed", "")),
+        }
+
+    result = {
+        "translated": True,
+        "language":   lang,
     }
+    for field in ("description", "benefits", "docs_needed"):
+        value = parsed.get(field) or fields_to_translate.get(field) or scheme.get(field, "")
+        result[field] = _strip_markdown(str(value)) if value else ""
+
+    print(f"[translate_scheme] OK — scheme={scheme_id} lang={lang} "
+          f"desc_preview={result.get('description', '')[:80]}")
+    return result
+
 
 @router.get("/{scheme_id}/voice")
 def get_scheme_voice(scheme_id: str, lang: str = "hi"):
     """
     Generate and return a TTS audio (MP3) explanation of the scheme
     in the requested language.
-
-    Uses ExplainerAgent to build a natural language summary, then
-    passes it to text_to_speech() from llm_service.
-
-    Query param:
-        lang: ISO 639-1 code — 'hi' | 'en' | 'ta' | 'te' | 'bn' | 'mr'
-
-    Returns:
-        audio/mpeg binary stream (MP3)
     """
     col = get_schemes_collection()
-
-    # Resolve scheme — ObjectId first, then numeric embedding_id
-    doc = None
-    try:
-        doc = col.find_one({"_id": ObjectId(scheme_id)})
-    except (InvalidId, Exception):
-        pass
-
-    if doc is None and scheme_id.isdigit():
-        doc = col.find_one({"embedding_id": int(scheme_id)})
+    doc = _resolve_scheme(col, scheme_id)
 
     if not doc:
         raise HTTPException(
@@ -255,11 +293,7 @@ def get_scheme_voice(scheme_id: str, lang: str = "hi"):
         )
 
     scheme = format_scheme(doc)
-
-    # Generate a spoken explanation via ExplainerAgent (uses Gemini internally)
     explanation_text = _explainer_agent.explain(scheme, user_language=lang)
-
-    # Convert explanation text → MP3 bytes via gTTS
     audio_bytes = text_to_speech(explanation_text, language=lang)
 
     if not audio_bytes:
@@ -272,7 +306,6 @@ def get_scheme_voice(scheme_id: str, lang: str = "hi"):
         content=audio_bytes,
         media_type="audio/mpeg",
         headers={
-            # Suggest a filename for browser downloads
             "Content-Disposition": f'inline; filename="scheme_{scheme_id}_{lang}.mp3"',
         },
     )
@@ -280,22 +313,9 @@ def get_scheme_voice(scheme_id: str, lang: str = "hi"):
 
 @router.get("/{scheme_id}")
 def get_scheme(scheme_id: str):
-    """
-    Return full details for a single scheme.
-    Accepts either a MongoDB ObjectId hex string (24 chars) or a numeric embedding_id.
-    """
+    """Return full details for a single scheme."""
     col = get_schemes_collection()
-
-    # Try ObjectId lookup first (frontend passes Mongo _id as string)
-    doc = None
-    try:
-        doc = col.find_one({"_id": ObjectId(scheme_id)})
-    except (InvalidId, Exception):
-        pass
-
-    # Fallback: numeric embedding_id
-    if doc is None and scheme_id.isdigit():
-        doc = col.find_one({"embedding_id": int(scheme_id)})
+    doc = _resolve_scheme(col, scheme_id)
 
     if not doc:
         raise HTTPException(

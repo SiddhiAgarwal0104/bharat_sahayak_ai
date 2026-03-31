@@ -34,17 +34,32 @@ const normalizeLang = function(pref) {
   return LANG_CODE_MAP[pref] || "en"
 }
 
+// Strips bullet characters, markdown symbols, and collapses whitespace
+const cleanText = function(text) {
+  if (!text) return ""
+  return text
+    .replace(/[•●▪]\s*/g, "")
+    .replace(/\*{1,3}(.*?)\*{1,3}/g, "$1")
+    .replace(/#{1,6}\s*/g, "")
+    .replace(/\n{2,}/g, " ")
+    .replace(/\n/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim()
+}
+
 const getSchemeImage = function(name, category) {
   var t = ((name || "") + " " + (category || "")).toLowerCase()
-  if (t.includes("farm") || t.includes("kisan") || t.includes("krishi"))
-    return "https://images.pexels.com/photos/10327341/pexels-photo-10327341.jpeg?auto=compress&cs=tinysrgb&w=800"
+  if (t.includes("farm") || t.includes("kisan") || t.includes("krishi") || t.includes("agriculture"))
+    return "/images/agriculture.jpg"
   if (t.includes("health") || t.includes("ayushman") || t.includes("medical"))
-    return "https://images.pexels.com/photos/4386466/pexels-photo-4386466.jpeg?auto=compress&cs=tinysrgb&w=800"
-  if (t.includes("pension") || t.includes("atal") || t.includes("nps"))
-    return "https://images.pexels.com/photos/3823488/pexels-photo-3823488.jpeg?auto=compress&cs=tinysrgb&w=800"
-  if (t.includes("women") || t.includes("mahila") || t.includes("beti"))
-    return "https://images.pexels.com/photos/3768911/pexels-photo-3768911.jpeg?auto=compress&cs=tinysrgb&w=800"
-  return "https://images.pexels.com/photos/1598075/pexels-photo-1598075.jpeg?auto=compress&cs=tinysrgb&w=800"
+    return "/images/health.jpg"
+  if (t.includes("pension") || t.includes("atal") || t.includes("nps") || t.includes("old age"))
+    return "/images/pension.jpg"
+  if (t.includes("women") || t.includes("mahila") || t.includes("beti") || t.includes("woman"))
+    return "/images/women.jpg"
+  if (t.includes("education") || t.includes("scholar") || t.includes("vidya"))
+    return "/images/education.jpg"
+  return "/images/home.jpg"
 }
 
 function checkEligibility(user, criteria) {
@@ -183,6 +198,7 @@ export default function SchemeDetail() {
   var translating = translatingArr[0]
   var setTranslating = translatingArr[1]
 
+  // t() picks translated field if available, else falls back to English from scheme
   var t = function(field) {
     if (translated && translated[field]) return translated[field]
     if (scheme && scheme[field]) return scheme[field]
@@ -203,18 +219,32 @@ export default function SchemeDetail() {
     var backendUrl = (import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000")
     var aborted = false
 
+    setTranslated(null)   // clear any previous translation when scheme/lang changes
     setTranslating(true)
 
     fetch(
       backendUrl + "/schemes/" + scheme.id + "/translate?lang=" + lang,
       { headers: { Authorization: "Bearer " + token } }
     )
-      .then(function(r) { return r.json() })
+      .then(function(r) {
+        if (!r.ok) throw new Error("HTTP " + r.status)
+        return r.json()
+      })
       .then(function(data) {
-        if (!aborted && data.translated) setTranslated(data)
+        if (aborted) return
+        console.log("[SchemeDetail] translate response:", data)
+
+        // Accept translation when:
+        //   data.translated === true  (boolean, normal case)
+        //   data.translated === false but fields still present (English fallback from backend)
+        // In both cases we call setTranslated so t() can use the cleaned fields.
+        var hasContent = data && (data.description || data.benefits || data.docs_needed)
+        if (hasContent) {
+          setTranslated(data)
+        }
       })
       .catch(function(e) {
-        console.warn("[SchemeDetail] translation failed:", e)
+        console.warn("[SchemeDetail] translation fetch failed:", e)
       })
       .finally(function() {
         if (!aborted) setTranslating(false)
@@ -257,9 +287,19 @@ export default function SchemeDetail() {
   var meta = CATEGORY_META[cat] || CATEGORY_META.other
   var checks = checkEligibility(user, scheme.eligibility_criteria)
   var allPass = checks.length > 0 && checks.every(function(c) { return c.pass })
+
+  // Split on comma, newline, AND Hindi/Indic danda (।); strip bullets and numbering
   var docsRaw = t("docs_needed")
   var docs = docsRaw
-    ? docsRaw.split(/[,\n]/).map(function(d) { return d.trim() }).filter(Boolean)
+    ? docsRaw
+        .split(/[,\n।]/)
+        .map(function(d) {
+          return d
+            .replace(/[•●▪\-–]\s*/g, "")
+            .replace(/^\d+[\.\)]\s*/, "")
+            .trim()
+        })
+        .filter(function(d) { return d.length > 1 })
     : []
 
   return (
@@ -314,8 +354,9 @@ export default function SchemeDetail() {
               </div>
             )}
 
+            {/* cleanText strips bullets/markdown from both English and translated text */}
             <p className="text-gray-700 leading-relaxed text-lg mb-8">
-              {t("description")}
+              {cleanText(t("description"))}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">

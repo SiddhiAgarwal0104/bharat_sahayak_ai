@@ -1,4 +1,3 @@
-
 """
 pdf_parser.py
 -------------
@@ -41,7 +40,7 @@ def extract_scheme_info(pdf_path: str) -> dict:
         "eligibility_criteria": _extract_eligibility(raw_text),
         "benefits":             _extract_benefits(raw_text),
         "docs_needed":          _extract_docs(raw_text),
-        "raw_text":             raw_text[:4000],   # used for embedding
+        "raw_text":             raw_text[:4000],   # used for embedding only
     }
 
 
@@ -115,12 +114,13 @@ def _get_category(filename: str) -> str:
             return category
 
     return "other"
+
+
 def _extract_name(text: str, filename: str) -> str:
     """
     Try to find scheme name from the first few lines of the PDF.
     Falls back to filename-derived name.
     """
-    # Try first 600 characters — scheme name is usually the title
     first_chunk = text[:600]
 
     # Look for ALL CAPS line (common for scheme titles in govt PDFs)
@@ -150,22 +150,54 @@ def _extract_name(text: str, filename: str) -> str:
 def _extract_description(text: str) -> str:
     """
     Return a meaningful description — look for 'about', 'objective', 'introduction'
-    sections. Falls back to first 800 chars.
+    sections.
+
+    Takes text from the keyword up to the next major section heading so the
+    full description is captured without an arbitrary character cap.
+    Falls back to the first 3000 chars of the document.
     """
     text_lower = text.lower()
 
-    keywords = ["objective", "about the scheme", "introduction", "overview",
-                "background", "scheme overview", "about"]
+    # Section-start keywords to search for description
+    desc_keywords = [
+        "objective", "about the scheme", "introduction", "overview",
+        "background", "scheme overview", "about",
+    ]
 
-    for kw in keywords:
+    # Section-end markers — stop extracting when we hit one of these
+    # so we don't bleed into eligibility/documents sections
+    end_markers = [
+        "eligibility", "who can apply", "beneficiar",
+        "documents required", "required documents",
+        "how to apply", "application process",
+        "benefit", "financial assistance",
+    ]
+
+    for kw in desc_keywords:
         idx = text_lower.find(kw)
-        if idx != -1:
-            # Take text from that keyword onward, up to 800 chars
-            snippet = text[idx: idx + 800].strip()
+        if idx == -1:
+            continue
+
+        # Search up to 5000 chars from keyword start for an end marker
+        search_window = text_lower[idx: idx + 5000]
+        end_pos = len(search_window)   # default: take the whole window
+
+        for end_kw in end_markers:
+            # Skip if the end_kw is the same as the desc keyword we just found
+            if end_kw == kw:
+                continue
+            em_idx = search_window.find(end_kw)
+            # Only use as end marker if it appears after at least 300 chars
+            # (avoids cutting off if "benefit" appears in the objective line itself)
+            if em_idx != -1 and em_idx > 300 and em_idx < end_pos:
+                end_pos = em_idx
+
+        snippet = text[idx: idx + end_pos].strip()
+        if len(snippet) > 100:   # must be a real section, not a stray word match
             return snippet
 
-    # Fallback: first 800 chars
-    return text[:800].strip()
+    # Fallback: first 3000 chars (enough for a full description, not a truncated one)
+    return text[:3000].strip()
 
 
 def _extract_eligibility(text: str) -> dict:
@@ -186,7 +218,6 @@ def _extract_eligibility(text: str) -> dict:
     }
 
     # --- Age ---
-    # Patterns: "18 to 60 years", "age between 18-70", "18-60 years"
     age_patterns = [
         r'age[s]?\s*(?:between|of|from)?\s*(\d{1,2})\s*(?:to|-|and)\s*(\d{2,3})\s*year',
         r'(\d{1,2})\s*[-–]\s*(\d{2,3})\s*years?\s*of\s*age',
@@ -220,7 +251,6 @@ def _extract_eligibility(text: str) -> dict:
         criteria["gender"] = "M"
 
     # --- Income ---
-    # Patterns: "income below rs. 2,00,000", "annual income not exceeding 1.5 lakh"
     income_patterns = [
         r'income[^\d]*rs\.?\s*([\d,]+)',
         r'income[^\d]*inr\s*([\d,]+)',
@@ -233,7 +263,6 @@ def _extract_eligibility(text: str) -> dict:
             try:
                 raw = m.group(1).replace(",", "")
                 val = int(raw)
-                # If it looks like lakhs (small number like 2, 1.5)
                 if val < 1000:
                     val = val * 100000
                 criteria["max_income"] = val
@@ -263,31 +292,71 @@ def _extract_eligibility(text: str) -> dict:
 def _extract_benefits(text: str) -> str:
     """
     Find the benefits/amount section of the PDF.
+    Captures up to the next major section heading instead of a fixed char count.
     """
     text_lower = text.lower()
-    keywords = ["benefit", "financial assistance", "subsidy", "grant amount",
-                "pension amount", "insurance cover", "cash transfer", "amount of"]
+    keywords = [
+        "benefit", "financial assistance", "subsidy", "grant amount",
+        "pension amount", "insurance cover", "cash transfer", "amount of",
+    ]
+
+    end_markers = [
+        "eligibility", "documents required", "how to apply",
+        "application process", "who can apply",
+    ]
 
     for kw in keywords:
         idx = text_lower.find(kw)
-        if idx != -1:
-            return text[max(0, idx - 30): idx + 500].strip()
+        if idx == -1:
+            continue
 
-    # Fallback: text between chars 800–1400
-    return text[800:1400].strip()
+        search_window = text_lower[idx: idx + 2000]
+        end_pos = len(search_window)
+
+        for end_kw in end_markers:
+            em_idx = search_window.find(end_kw)
+            if em_idx != -1 and em_idx > 100 and em_idx < end_pos:
+                end_pos = em_idx
+
+        snippet = text[max(0, idx - 30): idx + end_pos].strip()
+        if len(snippet) > 50:
+            return snippet
+
+    # Fallback: text between chars 800–2000
+    return text[800:2000].strip()
 
 
 def _extract_docs(text: str) -> str:
     """
     Find the documents required section.
+    Captures up to the next major section heading instead of a fixed char count.
     """
     text_lower = text.lower()
-    keywords = ["documents required", "required documents", "documents needed",
-                "list of documents", "following documents", "attach", "enclose"]
+    keywords = [
+        "documents required", "required documents", "documents needed",
+        "list of documents", "following documents", "attach", "enclose",
+    ]
+
+    end_markers = [
+        "how to apply", "application process", "contact", "helpline",
+        "grievance", "for more information", "disclaimer",
+    ]
 
     for kw in keywords:
         idx = text_lower.find(kw)
-        if idx != -1:
-            return text[idx: idx + 600].strip()
+        if idx == -1:
+            continue
+
+        search_window = text_lower[idx: idx + 2000]
+        end_pos = len(search_window)
+
+        for end_kw in end_markers:
+            em_idx = search_window.find(end_kw)
+            if em_idx != -1 and em_idx > 100 and em_idx < end_pos:
+                end_pos = em_idx
+
+        snippet = text[idx: idx + end_pos].strip()
+        if len(snippet) > 30:
+            return snippet
 
     return "Please refer to the scheme PDF for document requirements."
